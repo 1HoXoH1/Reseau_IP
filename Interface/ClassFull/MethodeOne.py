@@ -53,14 +53,12 @@ class Methode_One(QWidget):
 
         self.lbl_AD_reseau = QLabel('Adresse Réseau:', self)
         self.lbl_Broadcast_IP = QLabel('Adresse Broadcast:', self)
-        self.lbl_SR_Reseau_IP = QLabel('Adresse sous-réseau:', self)
-        self.lbl_SR_Broadcast_IP = QLabel('Adresse Broadcast (SR):', self)
+
 
         # Ajouter les labels dans le layout vertical des résultats
         self.result_layout.addWidget(self.lbl_AD_reseau)
         self.result_layout.addWidget(self.lbl_Broadcast_IP)
-        self.result_layout.addWidget(self.lbl_SR_Reseau_IP)
-        self.result_layout.addWidget(self.lbl_SR_Broadcast_IP)
+
 
         self.result_group.setLayout(self.result_layout)
 
@@ -83,8 +81,7 @@ class Methode_One(QWidget):
         # Mise à jour des labels avec les valeurs calculées
         self.lbl_AD_reseau.setText(f"Adresse Réseau: {adresse_reseau}")
         self.lbl_Broadcast_IP.setText(f"Adresse Broadcast: {broadcast}")
-        self.lbl_SR_Reseau_IP.setText(f"Adresse Sous-Réseau: {adresse_reseau}")
-        self.lbl_SR_Broadcast_IP.setText(f"Adresse Broadcast (SR): {broadcast}")
+
 
     def Calc_data(self, ip_str, masque_str):
         try:

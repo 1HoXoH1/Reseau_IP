@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 import ipaddress
 
 from Projet_1.Interface.ClassFull.MethodeOne import Methode_One
+from Projet_1.Interface.ClassFull.MethodeThree import Methode_Three
 from Projet_1.Interface.ClassFull.MethodeTwo import Methode_Two
 
 
@@ -19,9 +20,11 @@ class Encodage(QWidget):
         #Ajout des pages
         self.methode_one = Methode_One()
         self.methode_two = Methode_Two()
+        self.methode_three = Methode_Three()
 
         self.tabs.addTab(self.methode_one, "Classique")
         self.tabs.addTab(self.methode_two, "Complexe")
+        self.tabs.addTab(self.methode_two, "Very_Complexe")
 
 
         self.main_layout.addWidget(self.tabs)
