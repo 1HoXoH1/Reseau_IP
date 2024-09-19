@@ -5,7 +5,7 @@ class PageZero(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Reseau IP')
-        self.resize(800, 600)
+        self.resize(1200, 800)
 
         #Layout principal
         self.main_layout = QVBoxLayout(self)
