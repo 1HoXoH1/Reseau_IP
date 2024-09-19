@@ -1,4 +1,5 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QRegExp
+from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import *
 import ipaddress
 
@@ -17,6 +18,22 @@ class EncodageLess(QWidget):
         self.AD_IP.setPlaceholderText('Adresse IP')
         self.masque = QLineEdit(self)
         self.masque.setPlaceholderText('Masque de l\'IP')
+
+        # Expression régulière pour un masque CIDR valide
+        adress_regex = QRegExp(
+            r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\/(3[0-2]|[1-2]?[0-9])$')
+
+        # Créer un validateur pour forcer l'entrée correcte
+        self.AD_IP_validator = QRegExpValidator(adress_regex, self.AD_IP)
+        self.AD_IP.setValidator(self.AD_IP_validator)
+
+
+        # Ajout du validateur pour le champ "masque" en bloquant les caractères qui ne sont pas
+        #conforme à un maque
+        cidr_regex = QRegExp(r'^\/(3[0-2]|[1-2]?[0-9])$')
+        self.masque_validator = QRegExpValidator(cidr_regex, self.masque)
+        self.masque.setValidator(self.masque_validator)
+
         self.btn_generate = QPushButton('Generate', self)
 
         self.HLine.addWidget(self.AD_IP)
@@ -24,8 +41,6 @@ class EncodageLess(QWidget):
         self.HLine.addWidget(self.btn_generate)
 
         # Ajout des labels qui seront sous les QLineEdit
-        self.lbl_AD_reseau = QLabel('Adresse Réseau:', self)
-        self.lbl_Broadcast_IP = QLabel('Adresse Broadcast:', self)
         self.lbl_SR_Reseau_IP = QLabel('Adresse sous-réseau:', self)
         self.lbl_SR_Broadcast_IP = QLabel('Adresse Broadcast (SR):', self)
 
@@ -34,8 +49,6 @@ class EncodageLess(QWidget):
         self.VLine.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         # Ajouter les labels dans le layout vertical
-        self.VLine.addWidget(self.lbl_AD_reseau)
-        self.VLine.addWidget(self.lbl_Broadcast_IP)
         self.VLine.addWidget(self.lbl_SR_Reseau_IP)
         self.VLine.addWidget(self.lbl_SR_Broadcast_IP)
 
@@ -49,31 +62,30 @@ class EncodageLess(QWidget):
         self.btn_generate.clicked.connect(self.generator_Ip_ClassFull)
 
     def generator_Ip_ClassFull(self):
-        ip = self.AD_IP.text()
-        masque = self.masque.text()
+        ip = self.AD_IP.text().strip()  # Récupération de l'adresse IP et suppression des espaces
+        masque = self.masque.text().strip()  # Récupération du masque au format /XX
 
-        #call function calc
+        # Appeler la fonction calc pour obtenir l'adresse réseau et l'adresse de broadcast
         adresse_reseau, broadcast = self.Calc_data(ip, masque)
 
         # Mettre à jour les labels avec les valeurs calculées
-        self.lbl_AD_reseau.setText(f"Adresse Réseau: {adresse_reseau}")
-        self.lbl_Broadcast_IP.setText(f"Adresse Broadcast: {broadcast}")
         self.lbl_SR_Reseau_IP.setText(f"Adresse Sous-Réseau: {adresse_reseau}")
         self.lbl_SR_Broadcast_IP.setText(f"Adresse Broadcast (SR): {broadcast}")
 
     def Calc_data(self, ip_str, masque_str):
         try:
-            # Convertir les chaînes en objets IPv4
+            # Convertir l'adresse IP en objet IPv4
             ip = ipaddress.IPv4Address(ip_str)
-            masque = ipaddress.IPv4Network(f"0.0.0.0/{masque_str}", strict=False).netmask
 
-            # Calcul de l'adresse réseau avec l'opération AND bit à bit
-            adresse_reseau = ipaddress.IPv4Address(int(ip) & int(masque))
+            # Créer l'objet réseau avec le masque en format CIDR
+            network = ipaddress.IPv4Network(f"{ip}/{masque_str[1:]}", strict=False)
 
-            # Calcul de l'adresse de broadcast
-            broadcast = ipaddress.IPv4Address(int(adresse_reseau) | (int(masque) ^ 0xFFFFFFFF))
+            # Calculer l'adresse de sous-réseau et l'adresse de broadcast
+            adresse_reseau = network.network_address
+            broadcast = network.broadcast_address
 
             return str(adresse_reseau), str(broadcast)
-        except ValueError:
+        except ValueError as e:
             # Gérer les erreurs de format incorrect
             return "Erreur dans l'IP ou le masque", "Erreur"
+
