@@ -65,7 +65,27 @@ class CLMethod_Two(QWidget):
         self.setLayout(self.Master_Layout)
 
         # Connecter le bouton au générateur d'adresse IP
-        #self.btn_generate.clicked.connect(self.generator_Ip_ClassFull)
+        self.btn_generate.clicked.connect(self.verifier_appartenance_reseau)
 
+    def verifier_appartenance_reseau(self):
+        ip_text = self.AD_IP.text()
+        masque_text = self.masque.text().lstrip('/')  # Retirer le "/" du masque
+        reseau_text = self.AD_RS.text()
 
+        try:
+            # Combiner l'adresse de réseau et le masque pour créer un objet réseau
+            reseau = ipaddress.ip_network(f'{reseau_text}/{masque_text}', strict=False)
+
+            # Créer un objet adresse IP
+            ip = ipaddress.ip_address(ip_text)
+
+            # Vérifier si l'adresse IP appartient au réseau
+            if ip in reseau:
+                self.lbl_dansSR.setText(f"Appartient au réseau : Oui ({reseau})")
+            else:
+                self.lbl_dansSR.setText(f"Appartient au réseau : Non ({reseau})")
+
+        except ValueError as e:
+            # Gestion des erreurs de format ou autres erreurs
+            self.lbl_dansSR.setText(f"Erreur : {str(e)}")
 
