@@ -1,7 +1,5 @@
-from PyQt5.QtWidgets import *
-import sys
-from ClassFull import *
-from ClassLess import *
+from Projet_1.Interface.ClassFull.ClassFull import *
+from Projet_1.Interface.ClassLess.ClassLess import *
 class PageZero(QWidget):
 
     def __init__(self):
