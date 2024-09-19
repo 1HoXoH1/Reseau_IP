@@ -46,7 +46,7 @@ class CLMethod_One(QWidget):
 
         # Ajout des labels à la VLine (sous les champs de saisie)
         self.VLine = QVBoxLayout()
-        self.VLine.setAlignment(Qt.AlignCenter | Qt.AlignTop)
+        self.VLine.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         # Ajouter les labels dans le layout vertical
         self.VLine.addWidget(self.lbl_SR_Reseau_IP)

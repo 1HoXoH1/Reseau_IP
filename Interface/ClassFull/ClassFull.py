@@ -24,7 +24,7 @@ class Encodage(QWidget):
 
         self.tabs.addTab(self.methode_one, "Classique")
         self.tabs.addTab(self.methode_two, "Complexe")
-        self.tabs.addTab(self.methode_two, "Very_Complexe")
+        self.tabs.addTab(self.methode_three, "Very_Complexe")
 
 
         self.main_layout.addWidget(self.tabs)

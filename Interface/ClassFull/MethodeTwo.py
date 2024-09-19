@@ -23,8 +23,8 @@ class Methode_Two(QWidget):
         self.AD_IP_2.setFixedWidth(150)
 
         # Masque de sous-réseau
-        self.masque_2 = QComboBox(self)
-        self.masque_2.addItems(['255.0.0.0', '255.255.0.0', '255.255.255.0'])
+        self.masque_2 = QLineEdit(self)
+        self.masque_2.setPlaceholderText('Masque IP')
         self.masque_2.setFixedWidth(150)
 
         #Adresse réseau
@@ -70,7 +70,7 @@ class Methode_Two(QWidget):
     def SameNetwork(self):
         # Récupérer les valeurs des champs de saisie
         ip_str = self.AD_IP_2.text()
-        masque_str = self.masque_2.currentText()
+        masque_str = self.masque_2.text()
         reseau_str = self.AD_RESEAU.text()
 
         try:
