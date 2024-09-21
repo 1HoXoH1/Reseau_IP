@@ -99,38 +99,30 @@ class Methode_One(QWidget):
             # Gestion des erreurs de format incorrect
             return "Erreur dans l'IP ou le masque", "Erreur"
 
-
     def Calc_data_sr(self, ip_str, masque_str):
         try:
             # Conversion de la chaîne en objet IPv4
             ip = ipaddress.IPv4Address(ip_str)
+            print(masque_str, " début")
+
             # Détermination du masque de classe
-            # if ip.is_private or ip.is_loopback or ip.is_reserved:
-            #     masque = ipaddress.IPv4Network('10.0.0.0/8', strict=False).netmask  # Classe A
-            # elif ip in ipaddress.IPv4Network('172.16.0.0/12'):
-            #     masque = ipaddress.IPv4Network('172.16.0.0/12', strict=False).netmask  # Classe B
-            # elif ip in ipaddress.IPv4Network('192.168.0.0/16'):
-            #     masque = ipaddress.IPv4Network('192.168.0.0/16', strict=False).netmask  # Classe C
-            # else:
-            #     # Détermination du masque de classe basé sur l'adresse IP
-            #     if ip.is_global:
-            #         if ip < ipaddress.IPv4Address('128.0.0.0'):
-            #             masque = ipaddress.IPv4Network('255.0.0.0', strict=False).netmask  # Classe A
-            #         elif ip < ipaddress.IPv4Address('192.0.0.0'):
-            #             masque = ipaddress.IPv4Network('255.255.0.0', strict=False).netmask  # Classe B
-            #         else:
-            #             masque = ipaddress.IPv4Network('255.255.255.0', strict=False).netmask  # Classe C
-            #     else:
-            masque = ipaddress.IPv4Network(f"0.0.0.0/{masque_str}", strict=False).netmask
+            if ip.is_private or ip.is_loopback or ip.is_reserved:
+                masque = ipaddress.IPv4Network('10.0.0.0/8', strict=False).prefixlen  # Classe A
+            elif ip in ipaddress.IPv4Network('172.16.0.0/12'):
+                masque = ipaddress.IPv4Network('172.16.0.0/12', strict=False).prefixlen  # Classe B
+            elif ip in ipaddress.IPv4Network('192.168.0.0/16'):
+                masque = ipaddress.IPv4Network('192.168.0.0/16', strict=False).prefixlen  # Classe C
+            else:
+                masque = masque_str
 
-            print(masque)
-            # Calcul de l'adresse réseau
-            adresse_reseau_sr = ipaddress.IPv4Address(int(ip) & int(masque))
+            # Calcul de l'adresse réseau et de broadcast en utilisant ip_str et masque_str
+            reseau = ipaddress.IPv4Network(f"{ip}/{masque}", strict=False)
+            adresse_reseau_sr = reseau.network_address
+            broadcast_sr = reseau.broadcast_address
+            print(broadcast_sr, " fin")
 
-            # Calcul de l'adresse de broadcast
-            broadcast_sr = ipaddress.IPv4Address(int(adresse_reseau_sr) | (int(masque) ^ 0xFFFFFFFF))
-            print(broadcast_sr)
             return str(adresse_reseau_sr), str(broadcast_sr)
+
         except ValueError:
             # Gestion des erreurs de format incorrect
             return "Erreur dans l'IP", "Erreur"
