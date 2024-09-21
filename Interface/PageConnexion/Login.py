@@ -1,10 +1,17 @@
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QVBoxLayout, QLabel, QApplication, QHBoxLayout
+from PyQt5.QtSql import QSqlQuery
+from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QVBoxLayout, QLabel, QApplication, QHBoxLayout, QMessageBox
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCursor
+from Projet_1.Database.DataBase import Database
+import re
+
+from Projet_1.Interface.MainPage import PageZero
 
 class Login(QWidget):
     def __init__(self):
         super().__init__()
+
+        self.db = Database()
+        self.db.get_data()
 
         # Paramètres de la fenêtre
         self.setWindowTitle('Login')
@@ -33,6 +40,7 @@ class Login(QWidget):
         # Bouton de connexion
         self.btn_login = QPushButton("Connexion", self)
         self.btn_login.setStyleSheet(self.button_style())
+        self.btn_login.clicked.connect(self.CanIConnexion)
 
         # Phrase cliquable pour créer un compte
         self.label_create_account = QLabel("<a href='#'>Créer un compte</a>", self)
@@ -114,6 +122,63 @@ class Login(QWidget):
                 cursor: pointer;
             }
         """
+
+    def closeEvent(self, event):
+        """ Ferme la connexion à la base de données avant de fermer la fenêtre """
+        self.db.close()  # Appelle la méthode close() de ta classe Database
+        event.accept()  # Accepte l'événement de fermeture
+
+    def CanIConnexion(self):
+        username = self.Line_Name_username.text()
+        password = self.Line_Name_password.text()
+        self.Connexion(username, password)
+
+    def Connexion(self, name, pswd):
+
+        regex = r'\b[A-za-z0-9.\%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if re.fullmatch(regex, name):
+            value = True
+        else:
+            value = False
+
+        val = self.ConnexionBd(value, name, pswd)
+        if val:
+            QMessageBox.information(None, "Connexion réussi", "L'user est inscrit dans la bd")
+            self.main_page = PageZero()  # Créer une instance de PageZero
+            self.main_page.show()  # Afficher la page principale
+
+            self.close()
+        else:
+            QMessageBox.warning(None, "Error log", "This user does not a account")
+
+    def ConnexionBd(self, value, name, pswd):
+        #si email
+        if value:
+            query = QSqlQuery()
+            query.prepare("SELECT * FROM user WHERE email=? and password=?")
+            query.addBindValue(name)
+            query.addBindValue(pswd)
+            if query.exec_():
+                if query.next():  # Vérifie si un résultat est trouvé
+                    return True
+            else:
+                print("Query execution failed:", query.lastError().text())  # Affiche l'erreur dans la console
+
+            return False  # Renvoie False si aucun utilisateur n'est trouvé ou si la requête échoue
+
+        else:
+            query = QSqlQuery()
+            query.prepare("SELECT * FROM user WHERE name=? and password=?")
+            query.addBindValue(name)
+            query.addBindValue(pswd)
+            if query.exec_():
+                if query.next():  # Vérifie si un résultat est trouvé
+                    return True
+            else:
+                print("Query execution failed:", query.lastError().text())  # Affiche l'erreur dans la console
+
+            return False  # Renvoie False si aucun utilisateur n'est trouvé ou si la requête échoue
+
 
 # Exécution de l'application
 if __name__ == '__main__':

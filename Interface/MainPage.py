@@ -1,5 +1,7 @@
 from Projet_1.Interface.ClassFull.ClassFull import *
 from Projet_1.Interface.ClassLess.ClassLess import *
+
+
 class PageZero(QWidget):
 
     def __init__(self):
@@ -20,8 +22,8 @@ class PageZero(QWidget):
         self.tabs.addTab(self.full, "ClassFull")
         self.tabs.addTab(self.less, "ClassLess")
 
-
         self.main_layout.addWidget(self.tabs)
+
 
 if __name__ == '__main__':
     app = QApplication([])
