@@ -29,7 +29,6 @@ class Methode_Three(QWidget):
         adress_regex = QRegExp(
             r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\/(3[0-2]|[1-2]?[0-9])$')
 
-
         # ajout du validateur pour l'adresse réseau
         self.AD_RS_validator = QRegExpValidator(adress_regex, self.AD_RS)
         self.AD_RS.setValidator(self.AD_RS_validator)
@@ -52,9 +51,16 @@ class Methode_Three(QWidget):
         self.tableauSR.setMaximumWidth(1100)
         self.tableauSR.setHorizontalHeaderLabels(
             ['Adresse réseau', 'Première IP', 'Dernière IP', 'Broadcast', "Nombre d'hôtes"])
+
+        # peremt de remplir tout l'espace
         header = self.tableauSR.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
-        self.tableauSR.hide()  # Cacher le tableau au début
+
+        # tableau inéditable
+        self.tableauSR.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        # Cacher le tableau au début
+        self.tableauSR.hide()
 
         # Appliquer le style CSS au tableau
         self.tableauSR.setStyleSheet("""
@@ -80,8 +86,46 @@ class Methode_Three(QWidget):
                    }
                """)
 
-
         self.lbl_decoupeIP = QLabel('Possibilité de découpe en fonction des IPs ? : ', self)
+
+        # Table pour afficher les sous-réseaux (cachée au début)
+        self.tableauIP = QTableWidget(self)
+        self.tableauIP.setColumnCount(5)
+        self.tableauIP.setMaximumHeight(250)
+        self.tableauIP.setMaximumWidth(1100)
+        self.tableauIP.setHorizontalHeaderLabels(
+            ['Adresse réseau', 'Première IP', 'Dernière IP', 'Broadcast', "Nombre d'hôtes"])
+        # peremt de remplir tout l'espace
+        header = self.tableauIP.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
+        # tableau inéditable
+        self.tableauIP.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # Cacher le tableau au début
+        self.tableauIP.hide()
+
+        # Appliquer le style CSS au tableau
+        self.tableauIP.setStyleSheet("""
+                           QTableWidget {
+                               background-color: #f0f0f0;  /* Couleur de fond du tableau */
+                               border: 2px solid #333;     /* Bordure autour du tableau */
+                               gridline-color: #888;       /* Couleur des lignes de séparation */
+                           }
+                           QHeaderView::section {
+                               background-color: #5f5f5f;  /* Couleur de fond des en-têtes */
+                               color: white;               /* Couleur du texte des en-têtes */
+                               font-weight: bold;          /* Texte en gras dans les en-têtes */
+                               border: 1px solid #333;
+                               padding: 4px;
+                           }
+                           QTableWidget::item {
+                               border: 1px solid #ccc;     /* Bordure des cellules */
+                               padding: 4px;
+                           }
+                           QTableWidget::item:selected {
+                               background-color: #87CEFA;  /* Couleur de la ligne sélectionnée */
+                               color: black;               /* Couleur du texte de la ligne sélectionnée */
+                           }
+                       """)
 
         # Ajout des labels à la VLine (sous les champs de saisie)
         self.VLine = QVBoxLayout()
@@ -92,7 +136,7 @@ class Methode_Three(QWidget):
         self.VLine.addWidget(self.lbl_decoupeSR)
         self.VLine.addWidget(self.tableauSR)
         self.VLine.addWidget(self.lbl_decoupeIP)
-
+        self.VLine.addWidget(self.tableauIP)
 
         # Ajout du layout horizontal (pour les QLineEdit) et vertical (pour les labels) dans le layout principal
         self.Master_Layout.addLayout(self.HLine)  # Les QLineEdit en haut
@@ -106,8 +150,7 @@ class Methode_Three(QWidget):
     def lancer_prog(self):
         self.calc_nb_total_hotes()
         self.verifier_decoupe_sr()
-
-
+        self.verifier_decoupe_ip()
 
     def calculer_masque_initial(self):
         # Récupérer l'adresse IP
@@ -130,8 +173,6 @@ class Methode_Three(QWidget):
 
         return masque
 
-
-
     def calc_nb_total_hotes(self):
         try:
             masque = self.calculer_masque_initial()
@@ -144,7 +185,6 @@ class Methode_Three(QWidget):
 
         except ValueError as e:
             self.lbl_nbTotHotes.setText(f"Erreur : {str(e)}")
-
 
     def verifier_decoupe_sr(self):
         try:
@@ -190,7 +230,7 @@ class Methode_Three(QWidget):
             adresse_entier = int(reseau.network_address)
 
             # Liste pour stocker les adresses des sous-réseaux
-            #plan_adressage = []
+            # plan_adressage = []
 
             # Réinitialiser et montrer le tableau
             self.tableauSR.setRowCount(nombre_sr)
@@ -222,7 +262,75 @@ class Methode_Three(QWidget):
         except Exception as e:
             self.lbl_decoupeSR.setText(f"Erreur inattendue : {str(e)}")  # Capture toutes les autres erreurs
 
+    def verifier_decoupe_ip(self):
+        try:
+            # Récupérer les valeurs saisies
+            nombre_ip_par_sr = int(self.nbHote.text())
+            masque_initial = self.calculer_masque_initial()
 
-    #def verifier_decoupe_ip(self):
+            # Calculer le nombre total d'hôtes
+            total_hotes = 2 ** (32 - masque_initial) - 2  # -2 pour les adresses réservées
 
+            # Vérifier si le nombre d'IP par sous-réseau est valide
+            if nombre_ip_par_sr <= 0 or nombre_ip_par_sr >= total_hotes:
+                raise ValueError("Le nombre d'IP par sous-réseau doit être compris entre 1 et {}".format(total_hotes))
 
+            # Calculer le masque nécessaire pour le nombre d'IP par sous-réseau
+            masque_nouveau = 32 - math.ceil(math.log2(nombre_ip_par_sr + 2))  # +2 pour réseau et broadcast
+
+            # Vérifier que le masque n'est pas inférieur au masque initial
+            if masque_nouveau < masque_initial:
+                raise ValueError("Le masque nécessaire ne peut pas être inférieur au masque initial.")
+
+            # Calculer le nombre de sous-réseaux possibles
+            # C'est ici que le calcul doit être corrigé
+            max_sous_reseaux_possibles = 2 ** (masque_nouveau - masque_initial)
+
+            # Afficher les résultats
+            self.lbl_decoupeIP.setText(
+                f"Masque nécessaire : /{masque_nouveau}, Max sous-réseaux possibles : {max_sous_reseaux_possibles}")
+
+            if max_sous_reseaux_possibles <= 0:
+                self.lbl_decoupeIP.setText("Impossible de réaliser la découpe avec le nombre d'IP demandé.")
+                return
+
+            # Vider le tableau avant de le remplir
+            self.tableauIP.setRowCount(0)
+
+            # Vérifier que l'adresse initiale est valide
+            adresse_reseau = ipaddress.IPv4Network(self.AD_RS.text(), strict=False)
+
+            for i in range(max_sous_reseaux_possibles):
+                # Créer un sous-réseau
+                sous_reseau = ipaddress.IPv4Network((str(adresse_reseau.network_address), masque_nouveau), strict=False)
+                premiere_ip = sous_reseau.network_address + 1
+                derniere_ip = sous_reseau.broadcast_address - 1
+                adresse_broadcast = sous_reseau.broadcast_address
+                nombre_hotes = 2 ** (32 - masque_nouveau) - 2  # -2 pour réseau et broadcast
+
+                # Ajouter une nouvelle ligne au tableau
+                self.tableauIP.insertRow(i)
+
+                # Remplir le tableau avec les informations de chaque sous-réseau
+                self.tableauIP.setItem(i, 0, QTableWidgetItem(str(sous_reseau.network_address)))
+                self.tableauIP.setItem(i, 1, QTableWidgetItem(str(premiere_ip)))
+                self.tableauIP.setItem(i, 2, QTableWidgetItem(str(derniere_ip)))
+                self.tableauIP.setItem(i, 3, QTableWidgetItem(str(adresse_broadcast)))
+                self.tableauIP.setItem(i, 4, QTableWidgetItem(str(nombre_hotes)))
+
+                # Incrémenter l'adresse pour le prochain sous-réseau
+                # Vérifier que la prochaine adresse ne dépasse pas 255.255.255.255
+                if adresse_reseau.broadcast_address >= ipaddress.IPv4Address('255.255.255.255'):
+                    break  # Sortir de la boucle si nous avons atteint la limite des adresses IPv4
+
+                # Incrémenter l'adresse pour le prochain sous-réseau
+                adresse_reseau = ipaddress.IPv4Network((str(adresse_reseau.broadcast_address + 1), masque_initial),
+                                                       strict=False)
+
+            # Afficher le tableau après l'avoir rempli
+            self.tableauIP.show()
+
+        except ValueError as e:
+            self.lbl_decoupeIP.setText(f"Erreur : {str(e)}")
+        except Exception as e:
+            self.lbl_decoupeIP.setText(f"Erreur inattendue : {str(e)}")
