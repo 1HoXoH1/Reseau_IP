@@ -44,9 +44,44 @@ class Methode_Three(QWidget):
         # Ajout des labels qui seront sous les QLineEdit
         self.lbl_nbTotHotes = QLabel('Nomber total d\'hotes : ', self)
         self.lbl_decoupeSR = QLabel('Possibilité de découpe en fonction des sous réseaux ? : ', self)
+
+        # Table pour afficher les sous-réseaux (cachée au début)
+        self.tableauSR = QTableWidget(self)
+        self.tableauSR.setColumnCount(5)
+        self.tableauSR.setMaximumHeight(250)
+        self.tableauSR.setMaximumWidth(1100)
+        self.tableauSR.setHorizontalHeaderLabels(
+            ['Adresse réseau', 'Première IP', 'Dernière IP', 'Broadcast', "Nombre d'hôtes"])
+        header = self.tableauSR.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
+        self.tableauSR.hide()  # Cacher le tableau au début
+
+        # Appliquer le style CSS au tableau
+        self.tableauSR.setStyleSheet("""
+                   QTableWidget {
+                       background-color: #f0f0f0;  /* Couleur de fond du tableau */
+                       border: 2px solid #333;     /* Bordure autour du tableau */
+                       gridline-color: #888;       /* Couleur des lignes de séparation */
+                   }
+                   QHeaderView::section {
+                       background-color: #5f5f5f;  /* Couleur de fond des en-têtes */
+                       color: white;               /* Couleur du texte des en-têtes */
+                       font-weight: bold;          /* Texte en gras dans les en-têtes */
+                       border: 1px solid #333;
+                       padding: 4px;
+                   }
+                   QTableWidget::item {
+                       border: 1px solid #ccc;     /* Bordure des cellules */
+                       padding: 4px;
+                   }
+                   QTableWidget::item:selected {
+                       background-color: #87CEFA;  /* Couleur de la ligne sélectionnée */
+                       color: black;               /* Couleur du texte de la ligne sélectionnée */
+                   }
+               """)
+
+
         self.lbl_decoupeIP = QLabel('Possibilité de découpe en fonction des IPs ? : ', self)
-
-
 
         # Ajout des labels à la VLine (sous les champs de saisie)
         self.VLine = QVBoxLayout()
@@ -55,6 +90,7 @@ class Methode_Three(QWidget):
         # Ajouter les labels dans le layout vertical
         self.VLine.addWidget(self.lbl_nbTotHotes)
         self.VLine.addWidget(self.lbl_decoupeSR)
+        self.VLine.addWidget(self.tableauSR)
         self.VLine.addWidget(self.lbl_decoupeIP)
 
 
@@ -109,6 +145,7 @@ class Methode_Three(QWidget):
         except ValueError as e:
             self.lbl_nbTotHotes.setText(f"Erreur : {str(e)}")
 
+
     def verifier_decoupe_sr(self):
         try:
             # Récupérer les valeurs saisies
@@ -124,13 +161,11 @@ class Methode_Three(QWidget):
 
             bits_nécessaires = math.ceil(math.log2(nombre_sr))
 
-            # Afficher le nombre de bits disponibles et nécessaires
-            self.lbl_decoupeSR.setText(f"Bits disponibles : {bits_disponibles}, Bits nécessaires : {bits_nécessaires}")
-
             # Vérifier si la découpe est possible
             if bits_nécessaires > bits_disponibles:
                 self.lbl_decoupeSR.setText(
                     f"Impossible de réaliser la découpe. Bits nécessaires : {bits_nécessaires}, Bits disponibles : {bits_disponibles}")
+                self.tableauSR.hide()
                 return
 
             # Calculer le nombre de sous-réseaux possibles
@@ -140,6 +175,7 @@ class Methode_Three(QWidget):
             if nombre_sr > max_sous_reseaux_possibles:
                 self.lbl_decoupeSR.setText(
                     f"Impossible de réaliser la découpe. Nombre de sous-réseaux demandés : {nombre_sr}, Max possibles : {max_sous_reseaux_possibles}")
+                self.tableauSR.hide()
                 return
 
             # Calculer le nouveau masque
@@ -148,32 +184,38 @@ class Methode_Three(QWidget):
             # Calculer la taille de chaque sous-réseau
             taille_sous_reseau = 2 ** (32 - nouveau_masque)  # Nombre d'adresses dans chaque sous-réseau
 
-            # Calculer l'adresse de départ
+            # Convertir l'adresse réseau de départ en entier
             adresse_reseau = self.AD_RS.text()
-            adresse_sous_reseau = ipaddress.IPv4Network((adresse_reseau, nouveau_masque), strict=False)
+            reseau = ipaddress.IPv4Network(adresse_reseau, strict=False)
+            adresse_entier = int(reseau.network_address)
 
             # Liste pour stocker les adresses des sous-réseaux
-            plan_adressage = []
+            #plan_adressage = []
 
-            # Liste des sous-réseaux
-            sous_reseaux = list(adresse_sous_reseau.subnets(new_prefix=nouveau_masque))
+            # Réinitialiser et montrer le tableau
+            self.tableauSR.setRowCount(nombre_sr)
+            self.tableauSR.show()
 
+            # Boucle pour générer chaque sous-réseau
             for i in range(nombre_sr):
-                # Assurez-vous que l'index est dans la plage
-                if i < len(sous_reseaux):
-                    plan_adressage.append(str(sous_reseaux[i].network_address))
-                else:
-                    break  # Sortir de la boucle si l'index dépasse la longueur de la liste
+                # Créer un sous-réseau à chaque itération
+                sous_reseau = ipaddress.IPv4Network((adresse_entier, nouveau_masque), strict=False)
+                adresse_reseau = sous_reseau.network_address
+                adresse_broadcast = sous_reseau.broadcast_address
+                premiere_ip = sous_reseau.network_address + 1
+                derniere_ip = sous_reseau.broadcast_address - 1
+                nombre_hotes = taille_sous_reseau - 2  # Retirer réseau et broadcast
 
+                # Remplir le tableau avec les informations de chaque sous-réseau
+                self.tableauSR.setItem(i, 0, QTableWidgetItem(str(sous_reseau.network_address)))
+                self.tableauSR.setItem(i, 1, QTableWidgetItem(str(premiere_ip)))
+                self.tableauSR.setItem(i, 2, QTableWidgetItem(str(derniere_ip)))
+                self.tableauSR.setItem(i, 3, QTableWidgetItem(str(adresse_broadcast)))
+                self.tableauSR.setItem(i, 4, QTableWidgetItem(str(nombre_hotes)))
 
+                # Incrémenter l'adresse réseau de la taille d'un sous-réseau
+                adresse_entier += taille_sous_reseau
 
-            #a vérif car seulement 1 adresse généré
-
-
-            print("Sous-réseaux générés :", sous_reseaux)
-
-            # Afficher le plan d'adressage **en dehors de la boucle**
-            self.lbl_decoupeSR.setText(f"Plan d'adressage : {', '.join(plan_adressage)}")
 
         except ValueError as e:
             self.lbl_decoupeSR.setText(f"Erreur : {str(e)}")
@@ -181,10 +223,6 @@ class Methode_Three(QWidget):
             self.lbl_decoupeSR.setText(f"Erreur inattendue : {str(e)}")  # Capture toutes les autres erreurs
 
 
-
-
-
-
-
+    #def verifier_decoupe_ip(self):
 
 
