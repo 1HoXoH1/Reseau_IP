@@ -1,8 +1,10 @@
 import os
 import sys
 
+import bcrypt
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery
 from PyQt5.QtWidgets import QMessageBox
+from openpyxl.utils.protection import hash_password
 
 
 class Database():
@@ -32,18 +34,27 @@ class Database():
         CREATE TABLE IF NOT EXISTS user(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            email TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL
         )
         """)
 
     def insertUser(self, name, email, password):
         query = QSqlQuery()
+
+        query.prepare("SELECT email FROM user")
+        if query.exec_():
+            while query.next():
+                if query.value(2) == email:
+                    return QMessageBox.warnig(None, "Error", "Email already registered")
+
+        new_password = self.hash_password(password)
+        print(new_password)
         query.prepare("INSERT INTO user (name, email, password) VALUES (?, ?, ?)")
 
         query.addBindValue(name)
         query.addBindValue(email)
-        query.addBindValue(password)
+        query.addBindValue(new_password)
 
         if not query.exec_():
             raise Exception("Failed to insert record: " + query.lastError().text())
@@ -65,3 +76,11 @@ class Database():
 
     def close(self):
         self.database.close()
+
+
+    def hash_password(self, password: str) -> str:
+        hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+        return hashed.decode("utf-8")
+
+
+

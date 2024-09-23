@@ -1,3 +1,4 @@
+import bcrypt
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QVBoxLayout, QLabel, QApplication, QHBoxLayout, QMessageBox
 from PyQt5.QtCore import Qt
@@ -5,6 +6,8 @@ from Projet_1.Database.DataBase import Database
 import re
 
 from Projet_1.Interface.MainPage import PageZero
+from Projet_1.Interface.PageConnexion.Inscription import PageInscription
+
 
 class Login(QWidget):
     def __init__(self):
@@ -12,6 +15,9 @@ class Login(QWidget):
 
         self.db = Database()
         self.db.get_data()
+        self.inscription_page = None
+
+
 
         # Paramètres de la fenêtre
         self.setWindowTitle('Login')
@@ -43,13 +49,17 @@ class Login(QWidget):
         self.btn_login.clicked.connect(self.CanIConnexion)
 
         # Phrase cliquable pour créer un compte
-        self.label_create_account = QLabel("<a href='#'>Créer un compte</a>", self)
-        self.label_create_account.setAlignment(Qt.AlignCenter)
-        self.label_create_account.setStyleSheet(self.link_style())
-        self.label_create_account.setOpenExternalLinks(False)
+        # self.label_create_account = QLabel("<a href='#'>Créer un compte</a>", self)
+        # self.label_create_account.setAlignment(Qt.AlignCenter)
+        # self.label_create_account.setStyleSheet(self.link_style())
+        # self.label_create_account.setOpenExternalLinks(True)
+        # self.label_create_account.mousePressEvent = self.create_account
+        self.btn_test = QPushButton("Test", self)
+        self.btn_test.clicked.connect(self.create_account)
+
 
         # Phrase cliquable pour réinitialiser le mot de passe
-        self.label_forgot_password = QLabel("<a href='#'>Mot de passe oublié ?</a>", self)
+        self.label_forgot_password = QLabel("<a href=''>Mot de passe oublié ?</a>", self)
         self.label_forgot_password.setAlignment(Qt.AlignCenter)
         self.label_forgot_password.setStyleSheet(self.link_style())
         self.label_forgot_password.setOpenExternalLinks(False)
@@ -59,7 +69,8 @@ class Login(QWidget):
         self.main_layout.addWidget(self.Line_Name_username)
         self.main_layout.addWidget(self.Line_Name_password)
         self.main_layout.addWidget(self.btn_login)
-        self.main_layout.addWidget(self.label_create_account)
+        # self.main_layout.addWidget(self.label_create_account)
+        self.main_layout.addWidget(self.btn_test)
         self.main_layout.addWidget(self.label_forgot_password)
 
         # Centrer le layout
@@ -129,6 +140,7 @@ class Login(QWidget):
         event.accept()  # Accepte l'événement de fermeture
 
     def CanIConnexion(self):
+
         username = self.Line_Name_username.text()
         password = self.Line_Name_password.text()
         self.Connexion(username, password)
@@ -146,38 +158,46 @@ class Login(QWidget):
             QMessageBox.information(None, "Connexion réussi", "L'user est inscrit dans la bd")
             self.main_page = PageZero()  # Créer une instance de PageZero
             self.main_page.show()  # Afficher la page principale
-
             self.close()
         else:
-            QMessageBox.warning(None, "Error log", "This user does not a account")
+            QMessageBox.warning(None, "Error log", "This user does not a account \n or your password or username/email is wrong \n please create a account")
 
-    def ConnexionBd(self, value, name, pswd):
-        #si email
+    def ConnexionBd(self, value, log, pswd):
+        #mettre le pswd en byte!!! pas le laisser en string sinon ça foire
+        pswd = pswd.encode('utf-8')
+
+        query = QSqlQuery()
         if value:
-            query = QSqlQuery()
-            query.prepare("SELECT * FROM user WHERE email=? and password=?")
-            query.addBindValue(name)
-            query.addBindValue(pswd)
-            if query.exec_():
-                if query.next():  # Vérifie si un résultat est trouvé
-                    return True
-            else:
-                print("Query execution failed:", query.lastError().text())  # Affiche l'erreur dans la console
-
-            return False  # Renvoie False si aucun utilisateur n'est trouvé ou si la requête échoue
-
+            query.prepare("SELECT * from user WHERE email like ?")
+            query.addBindValue(log)
         else:
-            query = QSqlQuery()
-            query.prepare("SELECT * FROM user WHERE name=? and password=?")
-            query.addBindValue(name)
-            query.addBindValue(pswd)
-            if query.exec_():
-                if query.next():  # Vérifie si un résultat est trouvé
-                    return True
-            else:
-                print("Query execution failed:", query.lastError().text())  # Affiche l'erreur dans la console
+            query.prepare("SELECT * from user WHERE name like ?")
+            query.addBindValue(log)
 
-            return False  # Renvoie False si aucun utilisateur n'est trouvé ou si la requête échoue
+        if query.exec_():
+            if query.exec_():
+                # Récupérer les résultats et les imprimer
+                if query.next():
+                    password_hashed = query.value(3)
+                    password_hashed = password_hashed.encode('utf-8')
+                    if bcrypt.checkpw(pswd, password_hashed):
+                        return True
+                    else:
+                        return False
+            else:
+                print("Query execution failed:", query.lastError().text())
+                return False
+        else:
+            QMessageBox.warning(None, "Error log", "Error DB")
+
+    def create_account(self):
+        print("Tentative d'ouverture de la page d'inscription...")
+        try:
+            self.inscription_page  = PageInscription()  # Vérifiez que PageInscription est correctement défini
+            self.inscription_page .show()
+            self.close()  # Assurez-vous que cela ne cause pas de problème
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Une erreur est survenue : {e}")
 
 
 # Exécution de l'application
