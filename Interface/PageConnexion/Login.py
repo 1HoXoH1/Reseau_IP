@@ -6,7 +6,7 @@ from Projet_1.Database.DataBase import Database
 import re
 
 from Projet_1.Interface.MainPage import PageZero
-from Projet_1.Interface.PageConnexion.Inscription import PageInscription
+
 
 
 class Login(QWidget):
@@ -16,7 +16,7 @@ class Login(QWidget):
         self.db = Database()
         self.db.get_data()
         self.inscription_page = None
-
+        self.change_pswd = None
 
 
         # Paramètres de la fenêtre
@@ -48,30 +48,21 @@ class Login(QWidget):
         self.btn_login.setStyleSheet(self.button_style())
         self.btn_login.clicked.connect(self.CanIConnexion)
 
-        # Phrase cliquable pour créer un compte
-        # self.label_create_account = QLabel("<a href='#'>Créer un compte</a>", self)
-        # self.label_create_account.setAlignment(Qt.AlignCenter)
-        # self.label_create_account.setStyleSheet(self.link_style())
-        # self.label_create_account.setOpenExternalLinks(True)
-        # self.label_create_account.mousePressEvent = self.create_account
-        self.btn_test = QPushButton("Test", self)
-        self.btn_test.clicked.connect(self.create_account)
+        self.btn_Create_Account = QPushButton("create account", self)
+        self.btn_Create_Account.clicked.connect(self.create_account)
 
 
-        # Phrase cliquable pour réinitialiser le mot de passe
-        self.label_forgot_password = QLabel("<a href=''>Mot de passe oublié ?</a>", self)
-        self.label_forgot_password.setAlignment(Qt.AlignCenter)
-        self.label_forgot_password.setStyleSheet(self.link_style())
-        self.label_forgot_password.setOpenExternalLinks(False)
+        self.btn_pswd_forget = QPushButton("forgive password", self)
+        self.btn_pswd_forget.clicked.connect(self.change_password)
+
 
         # Ajouter les widgets au layout principal
         self.main_layout.addWidget(self.label_title)
         self.main_layout.addWidget(self.Line_Name_username)
         self.main_layout.addWidget(self.Line_Name_password)
         self.main_layout.addWidget(self.btn_login)
-        # self.main_layout.addWidget(self.label_create_account)
-        self.main_layout.addWidget(self.btn_test)
-        self.main_layout.addWidget(self.label_forgot_password)
+        self.main_layout.addWidget(self.btn_Create_Account)
+        self.main_layout.addWidget(self.btn_pswd_forget)
 
         # Centrer le layout
         self.main_layout.setAlignment(Qt.AlignCenter)
@@ -174,24 +165,23 @@ class Login(QWidget):
             query.prepare("SELECT * from user WHERE name like ?")
             query.addBindValue(log)
 
+
         if query.exec_():
-            if query.exec_():
-                # Récupérer les résultats et les imprimer
-                if query.next():
-                    password_hashed = query.value(3)
-                    password_hashed = password_hashed.encode('utf-8')
-                    if bcrypt.checkpw(pswd, password_hashed):
-                        return True
-                    else:
-                        return False
-            else:
-                print("Query execution failed:", query.lastError().text())
-                return False
+            # Récupérer les résultats et les imprimer
+            if query.next():
+                password_hashed = query.value(3)
+                password_hashed = password_hashed.encode('utf-8')
+                if bcrypt.checkpw(pswd, password_hashed):
+                    return True
+                else:
+                    return False
         else:
-            QMessageBox.warning(None, "Error log", "Error DB")
+            print("Query execution failed:", query.lastError().text())
+            return False
+
 
     def create_account(self):
-        print("Tentative d'ouverture de la page d'inscription...")
+        from Projet_1.Interface.PageConnexion.Inscription import PageInscription
         try:
             self.inscription_page  = PageInscription()  # Vérifiez que PageInscription est correctement défini
             self.inscription_page .show()
@@ -199,10 +189,20 @@ class Login(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Une erreur est survenue : {e}")
 
+    def change_password(self, password):
+        from Projet_1.Interface.PageConnexion.mdp_forgive import forgive_mdp
+        try:
+            self.change_pswd = forgive_mdp()
+            self.change_pswd .show()
+            self.close()
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Une erreur est survenue : {e}")
+
+
 
 # Exécution de l'application
-if __name__ == '__main__':
-    app = QApplication([])
-    login = Login()
-    login.show()
-    app.exec_()
+# if __name__ == '__main__':
+#     app = QApplication([])
+#     login = Login()
+#     login.show()
+#     app.exec_()

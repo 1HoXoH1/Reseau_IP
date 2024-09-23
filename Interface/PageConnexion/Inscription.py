@@ -3,11 +3,20 @@ import sys
 from PyQt5 import Qt
 from Projet_1.Database.DataBase import Database
 
+
+
 class PageInscription(QWidget):
     def __init__(self):
         super().__init__()
+
+        #appel db
         self.db = Database()
         self.db.get_data()
+
+        #appel login
+        self.log = None
+
+
         self.setWindowTitle('Inscription')
         self.resize(600, 600)
 
@@ -53,7 +62,7 @@ class PageInscription(QWidget):
         # Bouton pour revenir à la page précédente
         self.btn_back = QPushButton("Retour", self)
         self.btn_back.setStyleSheet(self.button_style())
-        self.btn_back.clicked.connect(self.close)  # Ferme la fenêtre actuelle
+        self.btn_back.clicked.connect(self.go_back)  # Ferme la fenêtre actuelle
         layout.addWidget(self.btn_back)
 
         self.setLayout(layout)
@@ -107,16 +116,25 @@ class PageInscription(QWidget):
         username = self.input_username.text()
         email = self.input_email.text()
         password = self.input_password.text()
-
         self.db.insertUser(username, email, password)
+        self.go_back()
+
+    def go_back(self):
+        from Projet_1.Interface.PageConnexion.Login import Login
+        try:
+            self.log  = Login()  # Vérifiez que PageInscription est correctement défini
+            self.log .show()
+            self.close()  # Assurez-vous que cela ne cause pas de problème
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Une erreur est survenue : {e}")
 
 
 
 
 
 # Exécution de l'application
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    page_inscription = PageInscription()
-    page_inscription.show()
-    sys.exit(app.exec_())
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     page_inscription = PageInscription()
+#     page_inscription.show()
+#     sys.exit(app.exec_())

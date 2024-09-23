@@ -41,17 +41,19 @@ class Database():
 
     def insertUser(self, name, email, password):
         query = QSqlQuery()
-
         query.prepare("SELECT email FROM user")
+
         if query.exec_():
             while query.next():
-                if query.value(2) == email:
-                    return QMessageBox.warnig(None, "Error", "Email already registered")
+                # Vérifiez la première colonne
+                if query.value(0).strip().lower() == email.strip().lower():
+                    return QMessageBox.warning(None, "Error", "Email already registered")
+        else:
+            print("Erreur d'exécution de la requête :", query.lastError().text())
 
         new_password = self.hash_password(password)
-        print(new_password)
-        query.prepare("INSERT INTO user (name, email, password) VALUES (?, ?, ?)")
 
+        query.prepare("INSERT INTO user (name, email, password) VALUES (?, ?, ?)")
         query.addBindValue(name)
         query.addBindValue(email)
         query.addBindValue(new_password)
@@ -82,5 +84,16 @@ class Database():
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         return hashed.decode("utf-8")
 
+
+    def change_password(self, email, new_password) -> bool:
+        query = QSqlQuery()
+        query.prepare("UPDATE user SET password = ? WHERE email = ?")
+        query.addBindValue(new_password)
+        query.addBindValue(email)
+        if not query.exec_():
+            print("Failed to update record: " + query.lastError().text())
+            raise Exception("Failed to update record: " + query.lastError().text())
+            return False
+        return True
 
 
