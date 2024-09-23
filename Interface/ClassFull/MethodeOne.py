@@ -1,5 +1,6 @@
 import ipaddress
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QRegExp
+from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import *
 
 
@@ -19,17 +20,27 @@ class Methode_One(QWidget):
         # Adresse IP
         self.AD_IP = QLineEdit(self)
         self.AD_IP.setPlaceholderText('Adresse IP')
-        self.AD_IP.setFixedWidth(150)
+        #self.AD_IP.setFixedWidth(150)
 
         # Masque de sous-réseau
         self.masque = QLineEdit(self)
         self.masque.setPlaceholderText('Masque')
         self.masque.editingFinished.connect(self.isCutoutSR)
-        self.masque.setFixedWidth(150)
+        #self.masque.setFixedWidth(150)
+
+        # Expression régulière pour une adresse  valide
+        adress_regex = QRegExp(
+            r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
+
+        AD_IP_validateur = QRegExpValidator(adress_regex, self.AD_IP)
+        masque_validateur = QRegExpValidator(adress_regex, self.masque)
+        self.AD_IP.setValidator(AD_IP_validateur)
+        self.masque.setValidator(masque_validateur)
+
 
         # Bouton de génération
         self.btn_generate = QPushButton('Generate', self)
-        self.btn_generate.setFixedWidth(100)
+        #self.btn_generate.setFixedWidth(100)
 
         # Ajout des widgets dans la ligne d'entrée
         self.input_layout.addWidget(self.AD_IP)
@@ -103,7 +114,6 @@ class Methode_One(QWidget):
         try:
             # Conversion de la chaîne en objet IPv4
             ip = ipaddress.IPv4Address(ip_str)
-            print(masque_str, " début")
 
             # Détermination du masque de classe
             if ip.is_private or ip.is_loopback or ip.is_reserved:
@@ -119,7 +129,6 @@ class Methode_One(QWidget):
             reseau = ipaddress.IPv4Network(f"{ip}/{masque}", strict=False)
             adresse_reseau_sr = reseau.network_address
             broadcast_sr = reseau.broadcast_address
-            print(broadcast_sr, " fin")
 
             return str(adresse_reseau_sr), str(broadcast_sr)
 
@@ -175,6 +184,8 @@ class Methode_One(QWidget):
                                     f"L'adresse IP {ip_text} n'est pas subdivisée avec le masque {masque_text}.")
                 # Calcul des adresses réseau et broadcast en fonction de la classe
                 self.Calc_data()
+                self.lbl_Adress_SR.hide()
+                self.lbl_Broadcast_SR.hide()
 
         except ValueError as e:
             QMessageBox.critical(self, "Erreur", f"Entrée invalide : {e}")

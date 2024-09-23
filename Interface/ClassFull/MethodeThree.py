@@ -1,5 +1,3 @@
-import math
-
 from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import *
@@ -21,17 +19,26 @@ class Methode_Three(QWidget):
         self.nbSR = QLineEdit(self)
         self.nbSR.setPlaceholderText('Nombre de sous réseau')
         self.nbHote = QLineEdit(self)
-        self.nbHote.setPlaceholderText('Nombre d\'hôtes')
+        self.nbHote.setPlaceholderText('Nombre total d\'hôtes')
         self.AD_RS = QLineEdit(self)
         self.AD_RS.setPlaceholderText('Adresse réseau')
 
+        #Expression régulière pour les hotes et IP
+        nb_regex = QRegExp(r'^\d*$')
+
         # Expression régulière pour un masque CIDR valide
         adress_regex = QRegExp(
-            r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\/(3[0-2]|[1-2]?[0-9])$')
+            r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
+
+        #ajout des vlideur pour bloquer les caractères sur les champs
+        self.nbSR_validateur = QRegExpValidator(nb_regex, self.nbSR)
+        self.nbHote_validateur = QRegExpValidator(nb_regex, self.nbHote)
+        self.nbSR.setValidator(self.nbSR_validateur)
+        self.nbHote.setValidator(self.nbHote_validateur)
 
         # ajout du validateur pour l'adresse réseau
-        self.AD_RS_validator = QRegExpValidator(adress_regex, self.AD_RS)
-        self.AD_RS.setValidator(self.AD_RS_validator)
+        self.AD_RS_validateur = QRegExpValidator(adress_regex, self.AD_RS)
+        self.AD_RS.setValidator(self.AD_RS_validateur)
 
         self.btn_generate = QPushButton('Vérification', self)
 
@@ -175,6 +182,11 @@ class Methode_Three(QWidget):
 
     def calc_nb_total_hotes(self):
         try:
+            if not self.AD_RS.text().strip():
+                self.lbl_nbTotHotes.setText("Nombre total d\'hotes : Champ vide.")
+                return
+
+
             masque = self.calculer_masque_initial()
 
             # Calculer le nombre total d'hôtes
@@ -188,6 +200,17 @@ class Methode_Three(QWidget):
 
     def verifier_decoupe_sr(self):
         try:
+
+            if not self.nbSR.text().strip():
+                self.tableauSR.hide()
+                self.lbl_decoupeSR.setText("Possibilité de découpe en fonction des sous réseaux ? : Champ vide.")
+                return
+
+            if not self.AD_RS.text().strip():
+                self.tableauSR.hide()
+                self.lbl_decoupeSR.setText("Possibilité de découpe en fonction des sous réseaux ? : Aucune adresse réseau.")
+                return
+
             # Récupérer les valeurs saisies
             nombre_sr = int(self.nbSR.text())
             masque_initial = self.calculer_masque_initial()
@@ -199,17 +222,17 @@ class Methode_Three(QWidget):
             if nombre_sr <= 0:
                 raise ValueError("Le nombre de sous-réseaux doit être supérieur à 0.")
 
-            bits_nécessaires = math.ceil(math.log2(nombre_sr))
+            bits_necessaires = math.ceil(math.log2(nombre_sr))
 
             # Vérifier si la découpe est possible
-            if bits_nécessaires > bits_disponibles:
+            if bits_necessaires > bits_disponibles:
                 self.lbl_decoupeSR.setText(
-                    f"Impossible de réaliser la découpe. Bits nécessaires : {bits_nécessaires}, Bits disponibles : {bits_disponibles}")
+                    f"Impossible de réaliser la découpe. Bits nécessaires : {bits_necessaires}, Bits disponibles : {bits_disponibles}")
                 self.tableauSR.hide()
                 return
 
             # Calculer le nombre de sous-réseaux possibles
-            max_sous_reseaux_possibles = 2 ** bits_nécessaires
+            max_sous_reseaux_possibles = 2 ** bits_necessaires
 
             # Vérifier si le nombre de sous-réseaux demandés dépasse le maximum possible
             if nombre_sr > max_sous_reseaux_possibles:
@@ -219,7 +242,14 @@ class Methode_Three(QWidget):
                 return
 
             # Calculer le nouveau masque
-            nouveau_masque = masque_initial + bits_nécessaires
+            nouveau_masque = masque_initial + bits_necessaires
+
+            #Vérification si le masque est au dessus de 30
+            if (nouveau_masque >= 31):
+                self.lbl_decoupeSR.setText(
+                    f"Impossible de réaliser la découpe. Le masque ne peut pas être supérieur à 30. Masque actuel : {nouveau_masque}")
+                self.tableauSR.hide()
+                return
 
             # Calculer la taille de chaque sous-réseau
             taille_sous_reseau = 2 ** (32 - nouveau_masque)  # Nombre d'adresses dans chaque sous-réseau
@@ -229,8 +259,9 @@ class Methode_Three(QWidget):
             reseau = ipaddress.IPv4Network(adresse_reseau, strict=False)
             adresse_entier = int(reseau.network_address)
 
-            # Liste pour stocker les adresses des sous-réseaux
-            # plan_adressage = []
+            self.lbl_decoupeSR.setText(
+                f"Découpe possible. Masque nécessaire : /{nouveau_masque}, Max d\'hôtes : {taille_sous_reseau-2}")
+
 
             # Réinitialiser et montrer le tableau
             self.tableauSR.setRowCount(nombre_sr)
@@ -264,6 +295,16 @@ class Methode_Three(QWidget):
 
     def verifier_decoupe_ip(self):
         try:
+            if not self.nbHote.text().strip():
+                self.tableauIP.hide()
+                self.lbl_decoupeIP.setText("Possibilité de découpe en fonction des IPs ? : Champ vide.")
+                return
+
+            if not self.AD_RS.text().strip():
+                self.tableauIP.hide()
+                self.lbl_decoupeIP.setText("Possibilité de découpe en fonction des IPs ? : Aucune adresse réseau.")
+                return
+
             # Récupérer les valeurs saisies
             nombre_ip_par_sr = int(self.nbHote.text())
             masque_initial = self.calculer_masque_initial()
@@ -288,7 +329,7 @@ class Methode_Three(QWidget):
 
             # Afficher les résultats
             self.lbl_decoupeIP.setText(
-                f"Masque nécessaire : /{masque_nouveau}, Max sous-réseaux possibles : {max_sous_reseaux_possibles}")
+                f"Découpe Possible. Masque nécessaire : /{masque_nouveau}, Max sous-réseaux possibles : {max_sous_reseaux_possibles}")
 
             if max_sous_reseaux_possibles <= 0:
                 self.lbl_decoupeIP.setText("Impossible de réaliser la découpe avec le nombre d'IP demandé.")

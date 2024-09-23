@@ -19,7 +19,7 @@ class CLMethod_One(QWidget):
 
         # Expression régulière pour une adresse  valide
         adress_regex = QRegExp(
-            r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\/(3[0-2]|[1-2]?[0-9])$')
+            r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
 
         # Ajout du validateur pour le champ "masque" en bloquant les caractères qui ne sont pas
         # conforme à un maque

@@ -7,15 +7,17 @@ class PageZero(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Reseau IP')
-        self.resize(1200, 800)
 
-        #Layout principal
+        self.resize(1200, 800)
+        #self.showFullScreen()
+
+        # Layout principal
         self.main_layout = QVBoxLayout(self)
 
-        #création des pages de navigation
+        # création des pages de navigation
         self.tabs = QTabWidget()
 
-        #Ajout des pages
+        # Ajout des pages
         self.full = Encodage()
         self.less = EncodageLess()
 
@@ -25,8 +27,8 @@ class PageZero(QWidget):
         self.main_layout.addWidget(self.tabs)
 
 
-# if __name__ == '__main__':
-#     app = QApplication([])
-#     dashboard = PageZero()
-#     dashboard.show()
-#     app.exec_()
+if __name__ == '__main__':
+    app = QApplication([])
+    dashboard = PageZero()
+    dashboard.show()
+    app.exec_()

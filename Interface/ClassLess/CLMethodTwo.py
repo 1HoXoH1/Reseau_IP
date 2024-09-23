@@ -21,9 +21,8 @@ class CLMethod_Two(QWidget):
         self.AD_RS = QLineEdit(self)
         self.AD_RS.setPlaceholderText('Adresse réseau')
 
-        # Expression régulière pour un masque CIDR valide
         adress_regex = QRegExp(
-            r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\/(3[0-2]|[1-2]?[0-9])$')
+            r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
 
         # Créer un validateur pour forcer l'entrée correcte
         self.AD_IP_validator = QRegExpValidator(adress_regex, self.AD_IP)
