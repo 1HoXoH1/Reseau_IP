@@ -4,7 +4,6 @@ import sys
 import bcrypt
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery
 from PyQt5.QtWidgets import QMessageBox
-from openpyxl.utils.protection import hash_password
 
 
 class Database():

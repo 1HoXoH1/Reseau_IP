@@ -8,9 +8,27 @@ import math
 class Methode_Three(QWidget):
     def __init__(self):
         super().__init__()
+
+
+        self.radio_SR = QRadioButton("Découpe en sous réseuax", self)
+        self.radio_IP = QRadioButton("Découpe en IP", self)
+
+        self.radio_SR.setChecked(True)
+
+        self.radio_IP.toggled.connect(self.gerer_fonction_a_afficher)
+        self.radio_IP.toggled.connect(self.gerer_fonction_a_afficher)
+
+        self.boxRadio = QHBoxLayout()
+        self.boxRadio.addWidget(self.radio_SR)
+        self.boxRadio.addWidget(self.radio_IP)
+
+
+
         # master VBOX
         self.Master_Layout = QVBoxLayout()
         self.Master_Layout.setAlignment(Qt.AlignTop)  # Alignement en haut
+
+        self.Master_Layout.addLayout(self.boxRadio)
 
         # Création du layout pour les champs de saisie
         self.HLine = QHBoxLayout()
@@ -48,7 +66,7 @@ class Methode_Three(QWidget):
         self.HLine.addWidget(self.btn_generate)
 
         # Ajout des labels qui seront sous les QLineEdit
-        self.lbl_nbTotHotes = QLabel('Nomber total d\'hotes : ', self)
+        self.lbl_nbTotHotes = QLabel('Nombre total d\'hotes : ', self)
         self.lbl_decoupeSR = QLabel('Possibilité de découpe en fonction des sous réseaux ? : ', self)
 
         # Table pour afficher les sous-réseaux (cachée au début)
@@ -65,9 +83,6 @@ class Methode_Three(QWidget):
 
         # tableau inéditable
         self.tableauSR.setEditTriggers(QAbstractItemView.NoEditTriggers)
-
-        # Cacher le tableau au début
-        self.tableauSR.hide()
 
         # Appliquer le style CSS au tableau
         self.tableauSR.setStyleSheet("""
@@ -107,8 +122,12 @@ class Methode_Three(QWidget):
         header.setSectionResizeMode(QHeaderView.Stretch)
         # tableau inéditable
         self.tableauIP.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
         # Cacher le tableau au début
         self.tableauIP.hide()
+        self.tableauSR.hide()
+        self.nbHote.hide()
+        self.lbl_decoupeIP.hide()
 
         # Appliquer le style CSS au tableau
         self.tableauIP.setStyleSheet("""
@@ -153,6 +172,32 @@ class Methode_Three(QWidget):
 
         # Connecter le bouton au générateur d'adresse IP
         self.btn_generate.clicked.connect(self.lancer_prog)
+
+    def gerer_fonction_a_afficher(self):
+        if self.radio_SR.isChecked():
+            self.afficher_decoupe_SR()
+        else:
+            self.afficher_decoupe_IP()
+
+    def afficher_decoupe_SR(self):
+        self.nbHote.hide()
+        self.nbSR.show()
+        self.tableauIP.hide()
+        self.lbl_decoupeIP.hide()
+        self.nbHote.setText("")
+        self.lbl_decoupeSR.show()
+
+        return
+
+    def afficher_decoupe_IP(self):
+        self.nbSR.hide()
+        self.nbHote.show()
+        self.tableauSR.hide()
+        self.lbl_decoupeSR.hide()
+        self.nbSR.setText("")
+        self.lbl_decoupeIP.show()
+        return
+
 
     def lancer_prog(self):
         self.calc_nb_total_hotes()
