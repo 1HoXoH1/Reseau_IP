@@ -47,7 +47,7 @@ class Methode_Two(QWidget):
         self.AD_RESEAU.setValidator(AD_RS_validateur)
 
         # Bouton de génération
-        self.btn_generate_2 = QPushButton('Generate', self)
+        self.btn_generate_2 = QPushButton('Générer', self)
         self.btn_generate_2.setFixedWidth(150)
 
         # Ajout des widgets dans la ligne d'entrée

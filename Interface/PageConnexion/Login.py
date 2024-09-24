@@ -20,7 +20,7 @@ class Login(QWidget):
 
 
         # Paramètres de la fenêtre
-        self.setWindowTitle('Login')
+        self.setWindowTitle('Connexion')
         self.resize(600, 600)
 
         # Layout principal (Vertical)
@@ -48,11 +48,11 @@ class Login(QWidget):
         self.btn_login.setStyleSheet(self.button_style())
         self.btn_login.clicked.connect(self.CanIConnexion)
 
-        self.btn_Create_Account = QPushButton("create account", self)
+        self.btn_Create_Account = QPushButton("Créer un compte", self)
         self.btn_Create_Account.clicked.connect(self.create_account)
 
 
-        self.btn_pswd_forget = QPushButton("forgive password", self)
+        self.btn_pswd_forget = QPushButton("Mot de passe oublié", self)
         self.btn_pswd_forget.clicked.connect(self.change_password)
 
 
@@ -151,7 +151,9 @@ class Login(QWidget):
             self.main_page.show()  # Afficher la page principale
             self.close()
         else:
-            QMessageBox.warning(None, "Error log", "This user does not a account \n or your password or username/email is wrong \n please create a account")
+            QMessageBox.warning(None, "Erreur log", "L'utilisateur n'a pas de compte\n "
+                                                    "ou le mot de passe ou le surnom est erroné\n"
+                                                    "S'il vous plait créé un compte")
 
     def ConnexionBd(self, value, log, pswd):
         #mettre le pswd en byte!!! pas le laisser en string sinon ça foire
@@ -176,7 +178,7 @@ class Login(QWidget):
                 else:
                     return False
         else:
-            print("Query execution failed:", query.lastError().text())
+            print("Query exécution a échoué:", query.lastError().text())
             return False
 
 
@@ -198,11 +200,3 @@ class Login(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Une erreur est survenue : {e}")
 
-
-
-# Exécution de l'application
-# if __name__ == '__main__':
-#     app = QApplication([])
-#     login = Login()
-#     login.show()
-#     app.exec_()

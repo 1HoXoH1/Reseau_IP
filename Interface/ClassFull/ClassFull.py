@@ -22,9 +22,9 @@ class Encodage(QWidget):
         self.methode_two = Methode_Two()
         self.methode_three = Methode_Three()
 
-        self.tabs.addTab(self.methode_one, "Classique")
-        self.tabs.addTab(self.methode_two, "Complexe")
-        self.tabs.addTab(self.methode_three, "Very_Complexe")
+        self.tabs.addTab(self.methode_one, "Information réseau")
+        self.tabs.addTab(self.methode_two, "Appartenance réseau")
+        self.tabs.addTab(self.methode_three, "Découpe réseau")
 
 
         self.main_layout.addWidget(self.tabs)

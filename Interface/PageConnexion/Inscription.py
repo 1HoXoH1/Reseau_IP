@@ -128,13 +128,3 @@ class PageInscription(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Une erreur est survenue : {e}")
 
-
-
-
-
-# Exécution de l'application
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     page_inscription = PageInscription()
-#     page_inscription.show()
-#     sys.exit(app.exec_())

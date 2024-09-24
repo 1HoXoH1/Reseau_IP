@@ -10,7 +10,7 @@ class forgive_mdp(QWidget):
 
         self.db = None
         self.log = None
-        self.setWindowTitle("Change MDP")
+        self.setWindowTitle("Changer de mot de passe")
         self.resize(600, 600)
 
         # Master layout
@@ -61,7 +61,7 @@ class forgive_mdp(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Erreur", f"Une erreur est survenue : {e}")
         else:
-            QMessageBox.warning(None, "Error log", "The user is not in data base")
+            QMessageBox.warning(None, "Erreur log", "L'utilisateur n'est pas dans la base de donnée")
 
     def go_change_password(self, email, new_password) -> bool:
         from Projet_1.Database.DataBase import Database
@@ -127,11 +127,3 @@ class forgive_mdp(QWidget):
                 cursor: not-allowed;
             }
         """
-
-
-# Lancer l'application
-# if __name__ == '__main__':
-#     app = QApplication([])
-#     login = forgive_mdp()
-#     login.show()
-#     app.exec_()

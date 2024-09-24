@@ -39,7 +39,7 @@ class Methode_One(QWidget):
 
 
         # Bouton de génération
-        self.btn_generate = QPushButton('Generate', self)
+        self.btn_generate = QPushButton('Générer', self)
         #self.btn_generate.setFixedWidth(100)
 
         # Ajout des widgets dans la ligne d'entrée

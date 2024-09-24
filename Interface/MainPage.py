@@ -26,9 +26,3 @@ class PageZero(QWidget):
 
         self.main_layout.addWidget(self.tabs)
 
-
-if __name__ == '__main__':
-    app = QApplication([])
-    dashboard = PageZero()
-    dashboard.show()
-    app.exec_()
