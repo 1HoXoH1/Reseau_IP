@@ -1,4 +1,5 @@
 import bcrypt
+from PyQt5.QtGui import QIcon
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QVBoxLayout, QLabel, QApplication, QHBoxLayout, QMessageBox
 from PyQt5.QtCore import Qt
@@ -22,7 +23,7 @@ class Login(QWidget):
         # Paramètres de la fenêtre
         self.setWindowTitle('Connexion')
         self.resize(600, 600)
-
+        self.setWindowIcon(QIcon('assets/icon_reseau_ip.jpg'))
         # Layout principal (Vertical)
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)

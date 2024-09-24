@@ -106,6 +106,7 @@ class Methode_One(QWidget):
             # Mise à jour des labels avec les valeurs calculées
             self.lbl_AD_reseau.setText(f"Adresse Réseau: {adresse_reseau}")
             self.lbl_Broadcast_IP.setText(f"Adresse Broadcast: {broadcast}")
+            return str(adresse_reseau), str(broadcast)
         except ValueError:
             # Gestion des erreurs de format incorrect
             return "Erreur dans l'IP ou le masque", "Erreur"
