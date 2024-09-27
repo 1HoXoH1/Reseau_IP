@@ -23,6 +23,7 @@ class Login(QWidget):
         # Paramètres de la fenêtre
         self.setWindowTitle('Connexion')
         self.resize(600, 600)
+        self.showFullScreen()
         self.setWindowIcon(QIcon('assets/icon_reseau_ip.jpg'))
         # Layout principal (Vertical)
         self.main_layout = QVBoxLayout()
@@ -36,17 +37,15 @@ class Login(QWidget):
         # Ligne pour nom d'utilisateur
         self.Line_Name_username = QLineEdit(self)
         self.Line_Name_username.setPlaceholderText("Nom d'utilisateur")
-        self.Line_Name_username.setStyleSheet(self.input_style())
+        # self.Line_Name_username.setStyleSheet(self.input_style())
 
         # Ligne pour le mot de passe
         self.Line_Name_password = QLineEdit(self)
         self.Line_Name_password.setPlaceholderText("Mot de passe")
         self.Line_Name_password.setEchoMode(QLineEdit.Password)  # Masquer le mot de passe
-        self.Line_Name_password.setStyleSheet(self.input_style())
 
         # Bouton de connexion
         self.btn_login = QPushButton("Connexion", self)
-        self.btn_login.setStyleSheet(self.button_style())
         self.btn_login.clicked.connect(self.CanIConnexion)
 
         self.btn_Create_Account = QPushButton("Créer un compte", self)
@@ -69,62 +68,7 @@ class Login(QWidget):
         self.main_layout.setAlignment(Qt.AlignCenter)
 
         # Style général de la fenêtre
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #F3F4F6;
-            }
-        """)
-
-    def input_style(self):
-        """ Style CSS pour les QLineEdit (input) """
-        return """
-            QLineEdit {
-                padding: 10px;
-                font-size: 16px;
-                border: 2px solid #B0BEC5;
-                border-radius: 5px;
-                margin: 10px 0;
-                background-color: #FFFFFF;
-            }
-            QLineEdit:focus {
-                border-color: #42A5F5;
-            }
-        """
-
-    def button_style(self):
-        """ Style CSS pour le bouton de connexion """
-        return """
-            QPushButton {
-                padding: 10px;
-                font-size: 16px;
-                color: white;
-                background-color: #42A5F5;
-                border: none;
-                border-radius: 5px;
-                margin: 10px 0;
-            }
-            QPushButton:hover {
-                background-color: #1E88E5;
-                cursor: pointer;
-            }
-            QPushButton:pressed {
-                background-color: #1565C0;
-            }
-        """
-
-    def link_style(self):
-        """ Style CSS pour les labels cliquables (lien) """
-        return """
-            QLabel {
-                font-size: 14px;
-                color: #42A5F5;
-                margin-top: 10px;
-            }
-            QLabel:hover {
-                color: #1E88E5;
-                cursor: pointer;
-            }
-        """
+        self.setStyleSheet(open("Style/styleLog.css").read())
 
     def closeEvent(self, event):
         """ Ferme la connexion à la base de données avant de fermer la fenêtre """

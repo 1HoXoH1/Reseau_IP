@@ -35,6 +35,7 @@ class forgive_mdp(QWidget):
         self.btn_submit.setDisabled(True)
         self.btn_submit.clicked.connect(self.change_password)
         self.btn_cancel = QPushButton("Annuler")
+        self.btn_cancel.clicked.connect(self.getBack)
 
         # Ajouter les composants au layout
         self.master_layout.addWidget(self.lbl_email)
@@ -81,7 +82,11 @@ class forgive_mdp(QWidget):
         else:
             self.btn_submit.setDisabled(True)
 
-
+    def getBack(self):
+        from Projet_1.Interface.PageConnexion.Login import Login
+        self.log = Login()
+        self.log.show()
+        self.close()
 
     def style(self):
         return """

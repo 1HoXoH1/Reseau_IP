@@ -1,0 +1,59 @@
+/* Style général pour la fenêtre principale */
+QWidget {
+    background-color: #F3F4F6;
+}
+
+/* Style pour le titre */
+QLabel#label_title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Style des champs de texte (QLineEdit) */
+QLineEdit {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #B0BEC5;
+    border-radius: 5px;
+    margin: 10px 0;
+    background-color: #FFFFFF;
+}
+
+QLineEdit:focus {
+    border-color: #42A5F5;
+}
+
+/* Style des boutons */
+QPushButton {
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #42A5F5;
+    border: none;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+QPushButton:hover {
+    background-color: #1E88E5;
+    cursor: pointer;
+}
+
+QPushButton:pressed {
+    background-color: #1565C0;
+}
+
+/* Style des labels cliquables (lien) */
+QLabel#btn_pswd_forget, QLabel#btn_Create_Account {
+    font-size: 14px;
+    color: #42A5F5;
+    margin-top: 10px;
+}
+
+QLabel:hover {
+    color: #1E88E5;
+    cursor: pointer;
+}
