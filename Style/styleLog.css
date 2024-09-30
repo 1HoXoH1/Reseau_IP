@@ -1,6 +1,11 @@
 /* === Application globale === */
 QWidget {
-    background-color: #E0E0E0;  /* Couleur de fond gris clair pour tout le programme */
+    background-color: #C0C0C0;
+    font-family: "Arial", "Tahoma", "Verdana", sans-serif;
+    color: #333333;  /* Couleur du texte */
+    font-weight: 480;
+
+
 }
 
 
@@ -42,7 +47,11 @@ QLabel {
     margin-bottom: 5px;  /* Espace sous le label */
 }
 
+
+
 /* === QLineEdit === */
+
+
 
 
 QLineEdit {
@@ -50,8 +59,9 @@ QLineEdit {
     border: 2px solid #cccccc;  /* Bordure grise */
     border-radius: 5px;  /* Coins arrondis */
     padding: 8px 12px;  /* Padding interne pour le texte */
-    font-size: 14px;  /* Taille de la police pour les champs */
+    font-size: 17px;  /* Taille de la police pour les champs */
     color: #333333;  /* Couleur du texte */
+    font-weight: 530;
     transition: border-color 0.3s ease, font-size 0.3s ease;  /* Transition douce */
 }
 
@@ -77,13 +87,13 @@ QTabWidget::pane {
 }
 
 QTabBar::tab {
-    background-color: #007BFF;  /* Couleur de fond des onglets */
+    background-color: #007BFF;
     color: white;  /* Couleur du texte des onglets */
     border-radius: 5px 5px 0 0;  /* Coins arrondis pour les onglets */
     padding: 10px 20px;  /* Padding interne pour le texte */
     margin-right: 2px;  /* Espace entre les onglets */
     font-size: 15px;  /* Taille de la police dans les onglets */
-    min-width: 150px;  /* Largeur minimale des onglets */
+    min-width: 170px;  /* Largeur minimale des onglets */
     height: 24px;  /* Hauteur fixe des onglets */
     text-align: center;  /* Centrer le texte */
     transition: background-color 0.3s ease, transform 0.3s ease;  /* Animation douce au survol */
@@ -91,12 +101,14 @@ QTabBar::tab {
 
 
 QTabBar::tab:selected {
-    background-color: #0056b3;  /* Couleur plus sombre pour l'onglet sélectionné */
+    background-color: #003d7a;  /* Couleur plus sombre pour l'onglet sélectionné */
+    transform: scale(1.20);
+
 }
 
 QTabBar::tab:hover {
     background-color: #0056b3;  /* Couleur plus sombre au survol */
-    transform: scale(1.05);  /* Agrandissement léger au survol */
+    transform: scale(1.20);  /* Agrandissement léger au survol */
 }
 
 
@@ -110,15 +122,18 @@ QRadioButton {
     font-size: 16px;  /* Taille de la police */
     color: #333333;  /* Couleur du texte */
     spacing: 10px;  /* Espacement entre le bouton radio et le texte */
+    padding: 5px;  /* Ajout de padding pour agrandir la zone cliquable */
+    transition: color 0.3s ease;  /* Animation douce pour le changement de couleur */
 }
 
 QRadioButton::indicator {
-    width: 20px;  /* Taille du bouton radio */
-    height: 20px;  /* Taille du bouton radio */
+    width: 24px;  /* Taille du bouton radio */
+    height: 24px;  /* Taille du bouton radio */
     border: 2px solid #007BFF;  /* Bordure du bouton radio */
-    border-radius: 10px;  /* Arrondi pour le bouton radio */
+    border-radius: 12px;  /* Arrondi pour le bouton radio */
     background-color: #ffffff;  /* Couleur de fond par défaut */
     transition: background-color 0.3s ease, border-color 0.3s ease;  /* Animation douce pour le changement d'état */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);  /* Ajout d'une ombre */
 }
 
 QRadioButton::indicator:checked {
@@ -128,6 +143,15 @@ QRadioButton::indicator:checked {
 
 QRadioButton:hover::indicator {
     border-color: #0056b3;  /* Bordure plus sombre au survol */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);  /* Ombre plus marquée au survol */
+}
+
+QRadioButton:hover {
+    color: #0056b3;  /* Couleur du texte au survol */
+}
+
+QRadioButton:checked:hover {
+    color: #0056b3;  /* Couleur du texte quand sélectionné au survol */
 }
 
 
@@ -141,8 +165,8 @@ QTableWidget {
     border: 2px solid #DDDDDD;  /* Bordure grise claire autour du tableau */
     border-radius: 8px;  /* Coins arrondis */
     gridline-color: #CCCCCC;  /* Couleur des lignes de la grille */
-    font-size: 14px;  /* Taille de la police */
-    padding: 8px;  /* Padding interne autour des cellules */
+    font-size: 16px;  /* Taille de la police */
+    padding: 6px;  /* Padding interne autour des cellules */
 }
 
 /* === En-têtes de colonnes et de lignes === */
@@ -160,9 +184,59 @@ QHeaderView::section:hover {
     transition: background-color 0.3s ease;  /* Animation douce sur le survol */
 }
 
+
+
+
 /* === Cellules du tableau === */
+
+
+
 QTableWidget::item {
     border: 1px solid #DDDDDD;  /* Bordure des cellules */
-    padding: 10px;  /* Espace interne dans les cellules */
+    padding: 7px;  /* Espace interne dans les cellules */
+    color: #333333;  /* Couleur du texte dans les cellules (si tu veux modifier la couleur du texte) */
+    font-size: 14px;  /* Taille de la police (tu peux augmenter ou diminuer cette valeur) */
+    background-color: #E0E0E0;
+}
+
+QTableWidget::item:selected {
+    background-color: #87CEFA;  /* Couleur de fond de la cellule sélectionnée */
+    color: black;  /* Couleur du texte de la cellule sélectionnée */
+}
+
+
+
+/* === Qgroupbox === */
+
+
+
+QGroupBox {
+    border: 2px solid #007BFF;           /* Couleur de la bordure */
+    border-radius: 8px;                  /* Arrondi des coins */
+    margin: 15px;                        /* Espacement autour du groupe */
+    padding: 15px;                       /* Espacement à l'intérieur du groupe */
+    font-size: 16px;                     /* Taille de la police */
+    color: #333;                         /* Couleur du texte */
+    background-color: #C0C0C0;          /* Couleur de fond */
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;            /* Position du titre */
+    left: 5px;                          /* Décalage du titre */
+     padding: 7px;                     /*   Espacement autour du titre */
+    color: #007BFF;                      /* Couleur du titre */
+    font-weight: bold;                   /* Mettre le titre en gras */
+}
+
+
+
+
+/* === Style pour le QFrame (Séparateur) === */
+
+
+
+
+QFrame {
+    height: 2px;                         /* Épaisseur du séparateur */
 }
 

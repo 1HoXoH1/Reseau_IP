@@ -8,7 +8,7 @@ class PageZero(QWidget):
         super().__init__()
         self.setWindowTitle('Reseau IP')
 
-        self.resize(1200, 800)
+        self.resize(1200, 980)
         #self.showFullScreen()
 
         # Layout principal

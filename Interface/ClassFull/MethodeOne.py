@@ -14,19 +14,17 @@ class Methode_One(QWidget):
         self.Master_Layout.setContentsMargins(20, 20, 20, 20)
 
         # GroupBox pour les champs d'entrée
-        self.input_group = QGroupBox("Paramètres IP")
+        self.input_group = QGroupBox("Entrée des données")
         self.input_layout = QHBoxLayout()
 
         # Adresse IP
         self.AD_IP = QLineEdit(self)
         self.AD_IP.setPlaceholderText('Adresse IP')
-        #self.AD_IP.setFixedWidth(150)
 
         # Masque de sous-réseau
         self.masque = QLineEdit(self)
         self.masque.setPlaceholderText('Masque')
         self.masque.editingFinished.connect(self.isCutoutSR)
-        #self.masque.setFixedWidth(150)
 
         # Expression régulière pour une adresse  valide
         adress_regex = QRegExp(
@@ -98,6 +96,7 @@ class Methode_One(QWidget):
             ip = ipaddress.IPv4Address(ip_str)
             masque = ipaddress.IPv4Network(f"0.0.0.0/{masque_str}", strict=False).netmask
 
+
             # Calcul de l'adresse réseau
             adresse_reseau = ipaddress.IPv4Address(int(ip) & int(masque))
 
@@ -146,10 +145,26 @@ class Methode_One(QWidget):
         ip_text = self.AD_IP.text()
         masque_text = self.masque.text()
 
+        self.lbl_Broadcast_IP.show()
+
         try:
             # Convertir l'adresse IP et le masque en objets ip_address et ip_network
             adresse_ip = ipaddress.ip_address(ip_text)
             masque_sous_reseau = ipaddress.ip_network(f"0.0.0.0/{masque_text}", strict=False).netmask
+
+            # Vérifier si l'adresse IP est réservée ou privée
+            if adresse_ip.is_reserved:
+                self.lbl_AD_reseau.setText("L'adresse renseignée est réservée.")
+                self.lbl_Adress_SR.hide()
+                self.lbl_Broadcast_SR.hide()
+                self.lbl_Broadcast_IP.hide()
+                return
+            if adresse_ip.is_private:
+                self.lbl_AD_reseau.setText("L'adresse renseignée est privée.")
+                self.lbl_Adress_SR.hide()
+                self.lbl_Broadcast_SR.hide()
+                self.lbl_Broadcast_IP.hide()
+                return
 
             # Vérification de la classe de l'IP
             premier_octet = int(ip_text.split('.')[0])
@@ -170,10 +185,10 @@ class Methode_One(QWidget):
             if masque_sous_reseau > masque_class:
                 # Appel de la fonction qui traite les sous-réseaux
                 adresse_reseau_sr, broadcast_sr = self.Calc_data_sr(ip_text, masque_text)
+                self.lbl_Adress_SR.show()
+                self.lbl_Broadcast_SR.show()
                 self.lbl_Adress_SR.setText(f"Adresse Réseau SR: {adresse_reseau_sr}")
                 self.lbl_Broadcast_SR.setText(f"Adresse Broadcast SR: {broadcast_sr}")
-                self.lbl_Broadcast_SR.setHidden(False)
-                self.lbl_Adress_SR.setHidden(False)
 
                 self.Calc_data()
 
@@ -185,5 +200,4 @@ class Methode_One(QWidget):
 
         except ValueError as e:
             QMessageBox.critical(self, "Erreur", f"Entrée invalide : {e}")
-
 

@@ -14,41 +14,35 @@ class Methode_Two(QWidget):
         self.Master_Layout.setAlignment(Qt.AlignTop)
         self.Master_Layout.setContentsMargins(20, 20, 20, 20)
 
-        # Ajout de la 2ème partie du prog
-        self.input_group_2 = QGroupBox("Appertenance Réseau")
+        # Première section : "Appertenance Réseau"
+        self.input_group_2 = QGroupBox("Entrée des données")
         self.input_layout_2 = QHBoxLayout()
 
-        #Adresse Ip
+        # Adresse IP
         self.AD_IP_2 = QLineEdit(self)
         self.AD_IP_2.setPlaceholderText('Adresse IP')
-        #self.AD_IP_2.setFixedWidth(180)
 
         # Masque de sous-réseau
         self.masque_2 = QLineEdit(self)
         self.masque_2.setPlaceholderText('Masque IP')
-        #self.masque_2.setFixedWidth(180)
 
-        #Adresse réseau
+        # Adresse réseau
         self.AD_RESEAU = QLineEdit(self)
         self.AD_RESEAU.setPlaceholderText('Adresse Réseau')
-        #self.AD_RESEAU.setFixedWidth(180)
 
-        # Expression régulière pour une adresse  valide
+        # Expression régulière pour valider les adresses
         adress_regex = QRegExp(
             r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
+        AD_IP_validator = QRegExpValidator(adress_regex, self.AD_IP_2)
+        masque_2_validator = QRegExpValidator(adress_regex, self.masque_2)
+        AD_RESEAU_validator = QRegExpValidator(adress_regex, self.AD_RESEAU)
 
-
-        AD_IP_validateur = QRegExpValidator(adress_regex, self.AD_IP_2)
-        masque_2_validateur = QRegExpValidator(adress_regex, self.masque_2)
-        AD_RS_validateur = QRegExpValidator(adress_regex, self.AD_RESEAU)
-
-        self.AD_IP_2.setValidator(AD_IP_validateur)
-        self.masque_2.setValidator(masque_2_validateur)
-        self.AD_RESEAU.setValidator(AD_RS_validateur)
+        self.AD_IP_2.setValidator(AD_IP_validator)
+        self.masque_2.setValidator(masque_2_validator)
+        self.AD_RESEAU.setValidator(AD_RESEAU_validator)
 
         # Bouton de génération
         self.btn_generate_2 = QPushButton('Générer', self)
-        self.btn_generate_2.setFixedWidth(150)
 
         # Ajout des widgets dans la ligne d'entrée
         self.input_layout_2.addWidget(self.AD_IP_2)
@@ -57,17 +51,20 @@ class Methode_Two(QWidget):
         self.input_layout_2.addWidget(self.btn_generate_2)
 
         self.input_group_2.setLayout(self.input_layout_2)
-
         self.Master_Layout.addWidget(self.input_group_2)
 
+        # Séparateur entre la section d'entrée et la section des résultats
+        self.separator = QFrame()
+        self.separator.setFrameShape(QFrame.HLine)
+        self.separator.setFrameShadow(QFrame.Sunken)
+        self.Master_Layout.addWidget(self.separator)
 
-        # Labels pour afficher les résultats
+        # Deuxième section : "Résultats"
         self.result_group_2 = QGroupBox("Résultats")
         self.result_layout_2 = QVBoxLayout()
 
+        # Label de réponse
         self.lbl_rep = QLabel('Réponse :', self)
-
-        # Ajouter les labels dans le layout vertical des résultats
         self.result_layout_2.addWidget(self.lbl_rep)
 
         self.result_group_2.setLayout(self.result_layout_2)
@@ -80,7 +77,8 @@ class Methode_Two(QWidget):
 
         # Connecter le bouton au générateur d'adresse IP
         self.btn_generate_2.clicked.connect(self.SameNetwork)
-        # # Style général de la fenêtre
+
+        # Style général de la fenêtre
         self.setStyleSheet(open("Style/styleLog.css").read())
 
     def SameNetwork(self):
@@ -89,12 +87,35 @@ class Methode_Two(QWidget):
         masque_str = self.masque_2.text()
         reseau_str = self.AD_RESEAU.text()
 
-        try:
-            # Créer le réseau à partir de l'adresse réseau et du masque
-            reseau = ipaddress.IPv4Network(f"{reseau_str}/{masque_str}", strict=False)
+        # Vérifier que les champs ne sont pas vides
+        if not ip_str.strip():
+            self.lbl_rep.setText("Aucune adresse IP fournie.")
+            return
+        if not masque_str.strip():
+            self.lbl_rep.setText("Aucun masque fourni.")
+            return
+        if not reseau_str.strip():
+            self.lbl_rep.setText("Aucune adresse réseau fournie.")
+            return
 
+        try:
             # Créer l'adresse IP
             ip = ipaddress.IPv4Address(ip_str)
+
+            # Vérifier si l'adresse IP est réservée ou privée
+            if ip.is_reserved:
+                self.lbl_rep.setText("L'adresse renseignée est réservée.")
+                return
+            if ip.is_private:
+                self.lbl_rep.setText("L'adresse renseignée est privée.")
+                return
+
+            # Créer le réseau à partir de l'adresse réseau et du masque
+            try:
+                reseau = ipaddress.IPv4Network(f"{reseau_str}/{masque_str}", strict=True)
+            except ValueError:
+                self.lbl_rep.setText("L'adresse réseau n'est pas valide pour ce masque.")
+                return
 
             # Vérifier si l'adresse IP est dans le réseau
             if ip in reseau:

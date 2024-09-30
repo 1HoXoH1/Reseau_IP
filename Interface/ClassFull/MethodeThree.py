@@ -9,26 +9,35 @@ class Methode_Three(QWidget):
     def __init__(self):
         super().__init__()
 
-
-        self.radio_SR = QRadioButton("Découpe en sous réseuax", self)
+        self.input_group = QGroupBox("Choix de la découpe")
+        self.radio_SR = QRadioButton("Découpe en sous réseaux", self)
         self.radio_IP = QRadioButton("Découpe en IP", self)
 
         self.radio_SR.setChecked(True)
 
-        self.radio_IP.toggled.connect(self.gerer_fonction_a_afficher)
         self.radio_IP.toggled.connect(self.gerer_fonction_a_afficher)
 
         self.boxRadio = QHBoxLayout()
         self.boxRadio.addWidget(self.radio_SR)
         self.boxRadio.addWidget(self.radio_IP)
 
+        self.input_group.setLayout(self.boxRadio)
 
-
-        # master VBOX
+        # Master VBOX
         self.Master_Layout = QVBoxLayout()
         self.Master_Layout.setAlignment(Qt.AlignTop)  # Alignement en haut
 
-        self.Master_Layout.addLayout(self.boxRadio)
+        # Correction: utilisez addWidget pour ajouter le QGroupBox
+        self.Master_Layout.addWidget(self.input_group)
+
+        # Ajout du séparateur
+        self.separator = QFrame()
+        self.separator.setFrameShape(QFrame.HLine)
+        self.separator.setFrameShadow(QFrame.Sunken)
+        self.Master_Layout.addWidget(self.separator)
+
+        # Création du 2ème groupe avec un titre
+        self.input_group2 = QGroupBox("Données de découpe")  # Ajoutez un titre pour le groupe
 
         # Création du layout pour les champs de saisie
         self.HLine = QHBoxLayout()
@@ -41,20 +50,20 @@ class Methode_Three(QWidget):
         self.AD_RS = QLineEdit(self)
         self.AD_RS.setPlaceholderText('Adresse réseau')
 
-        #Expression régulière pour les hotes et IP
+        # Expression régulière pour les hôtes et IP
         nb_regex = QRegExp(r'^\d*$')
 
         # Expression régulière pour un masque CIDR valide
         adress_regex = QRegExp(
             r'^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$')
 
-        #ajout des vlideur pour bloquer les caractères sur les champs
+        # Ajout des validateurs pour bloquer les caractères sur les champs
         self.nbSR_validateur = QRegExpValidator(nb_regex, self.nbSR)
         self.nbHote_validateur = QRegExpValidator(nb_regex, self.nbHote)
         self.nbSR.setValidator(self.nbSR_validateur)
         self.nbHote.setValidator(self.nbHote_validateur)
 
-        # ajout du validateur pour l'adresse réseau
+        # Ajout du validateur pour l'adresse réseau
         self.AD_RS_validateur = QRegExpValidator(adress_regex, self.AD_RS)
         self.AD_RS.setValidator(self.AD_RS_validateur)
 
@@ -65,6 +74,19 @@ class Methode_Three(QWidget):
         self.HLine.addWidget(self.AD_RS)
         self.HLine.addWidget(self.btn_generate)
 
+        # Ajout dans le groupe puis à la vue
+        self.input_group2.setLayout(self.HLine)
+        self.Master_Layout.addWidget(self.input_group2)  # Utilisez addWidget ici aussi
+
+        # Séparateur entre la section d'entrée et la section des résultats
+        self.separator2 = QFrame()
+        self.separator2.setFrameShape(QFrame.HLine)
+        self.separator2.setFrameShadow(QFrame.Sunken)
+        self.Master_Layout.addWidget(self.separator2)
+
+        # Création du groupbox pour les labels et tableaux
+        self.group_labels_tableaux = QGroupBox("Découpe IP et Sous-Réseaux")
+
         # Ajout des labels qui seront sous les QLineEdit
         self.lbl_nbTotHotes = QLabel('Nombre total d\'hotes : ', self)
         self.lbl_decoupeSR = QLabel('Possibilité de découpe en fonction des sous réseaux ? : ', self)
@@ -72,16 +94,17 @@ class Methode_Three(QWidget):
         # Table pour afficher les sous-réseaux (cachée au début)
         self.tableauSR = QTableWidget(self)
         self.tableauSR.setColumnCount(5)
-        self.tableauSR.setMaximumHeight(450)
-        self.tableauSR.setMaximumWidth(1100)
+        self.tableauSR.setMinimumHeight(370)
+        self.tableauSR.setMaximumHeight(370)
+        self.tableauSR.verticalHeader().setDefaultSectionSize(40)
         self.tableauSR.setHorizontalHeaderLabels(
             ['Adresse réseau', 'Première IP', 'Dernière IP', 'Broadcast', "Nombre d'hôtes"])
 
-        # peremt de remplir tout l'espace
+        # Permet de remplir tout l'espace
         header = self.tableauSR.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
 
-        # tableau inéditable
+        # Tableau inéditable
         self.tableauSR.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         self.lbl_decoupeIP = QLabel('Possibilité de découpe en fonction des IPs ? : ', self)
@@ -89,41 +112,46 @@ class Methode_Three(QWidget):
         # Table pour afficher les sous-réseaux (cachée au début)
         self.tableauIP = QTableWidget(self)
         self.tableauIP.setColumnCount(5)
-        self.tableauIP.setMaximumHeight(450)
-        self.tableauIP.setMaximumWidth(1100)
+        self.tableauIP.setMinimumHeight(370)
+        self.tableauIP.setMaximumHeight(370)
+        self.tableauIP.verticalHeader().setDefaultSectionSize(40)
         self.tableauIP.setHorizontalHeaderLabels(
             ['Adresse réseau', 'Première IP', 'Dernière IP', 'Broadcast', "Nombre d'hôtes"])
-        # peremt de remplir tout l'espace
+
+        # Permet de remplir tout l'espace
         header = self.tableauIP.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
-        # tableau inéditable
+
+        # Tableau inéditable
         self.tableauIP.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        # Cacher le tableau au début
+        # Cacher les tableaux et certains éléments au début
         self.tableauIP.hide()
         self.tableauSR.hide()
         self.nbHote.hide()
         self.lbl_decoupeIP.hide()
 
         # Ajout des labels à la VLine (sous les champs de saisie)
-        self.VLine = QVBoxLayout()
-        self.VLine.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.VLineGroup = QVBoxLayout()  # Nouveau layout vertical pour le groupbox
+        self.VLineGroup.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         # Ajouter les labels dans le layout vertical
-        self.VLine.addWidget(self.lbl_nbTotHotes)
-        self.VLine.addWidget(self.lbl_decoupeSR)
-        self.VLine.addWidget(self.tableauSR)
-        self.VLine.addWidget(self.lbl_decoupeIP)
-        self.VLine.addWidget(self.tableauIP)
+        self.VLineGroup.addWidget(self.lbl_nbTotHotes)
+        self.VLineGroup.addWidget(self.lbl_decoupeSR)
+        self.VLineGroup.addWidget(self.tableauSR)
+        self.VLineGroup.addWidget(self.lbl_decoupeIP)
+        self.VLineGroup.addWidget(self.tableauIP)
 
-        # gère l'allignement
-        self.VLine.setAlignment(self.lbl_nbTotHotes, Qt.AlignTop)
-        self.VLine.setAlignment(self.tableauSR, Qt.AlignTop)
-        self.VLine.setAlignment(self.tableauIP, Qt.AlignTop)
+        # Gérer l'alignement
+        self.VLineGroup.setAlignment(self.lbl_nbTotHotes, Qt.AlignTop)
+        self.VLineGroup.setAlignment(self.tableauSR, Qt.AlignTop)
+        self.VLineGroup.setAlignment(self.tableauIP, Qt.AlignTop)
 
-        # Ajout du layout horizontal (pour les QLineEdit) et vertical (pour les labels) dans le layout principal
-        self.Master_Layout.addLayout(self.HLine)  # Les QLineEdit en haut
-        self.Master_Layout.addLayout(self.VLine)  # Les labels en dessous
+        # Appliquer le layout au QGroupBox
+        self.group_labels_tableaux.setLayout(self.VLineGroup)
+
+        # Ajouter le groupbox au layout principal (Master_Layout)
+        self.Master_Layout.addWidget(self.group_labels_tableaux)
 
         self.setLayout(self.Master_Layout)
 
@@ -168,11 +196,11 @@ class Methode_Three(QWidget):
         adresse_reseau = self.AD_RS.text()
         octets = list(map(int, adresse_reseau.split('.')))
 
-        # Vérifier la validité de l'adresse IP
+        # Vérifier la validité de l'adresse réseau
         if len(octets) != 4 or any(o < 0 or o > 255 for o in octets):
             raise ValueError("Adresse IP non valide.")
 
-        # Déterminer le masque en fonction de la tranche d'adresse IP
+        # Déterminer le masque en fonction de la tranche d'adresse réseau
         if 0 <= octets[0] < 128:
             masque = 8  # Classe A
         elif 128 <= octets[0] < 192:
@@ -180,7 +208,7 @@ class Methode_Three(QWidget):
         elif 192 <= octets[0] < 224:
             masque = 24  # Classe C
         else:
-            raise ValueError("Adresse IP non valide pour les classes A, B ou C.")
+            raise ValueError("Adresse réseau non valide pour les classes A, B ou C.")
 
         return masque
 
@@ -204,6 +232,14 @@ class Methode_Three(QWidget):
 
     def verifier_decoupe_sr(self):
         try:
+            # Convertir l'adresse réseau de départ en entier
+            adresse_reseau = self.AD_RS.text()
+            reseau = ipaddress.IPv4Network(adresse_reseau, strict=False)
+
+            if reseau.is_reserved or reseau.is_private:
+                self.lbl_decoupeSR.setText("L'adresse renseignée est privée.")
+                self.lbl_nbTotHotes.hide()
+                return
 
             if not self.nbSR.text().strip():
                 self.tableauSR.hide()
@@ -214,6 +250,7 @@ class Methode_Three(QWidget):
                 self.tableauSR.hide()
                 self.lbl_decoupeSR.setText("Possibilité de découpe en fonction des sous réseaux ? : Aucune adresse réseau.")
                 return
+
 
             # Récupérer les valeurs saisies
             nombre_sr = int(self.nbSR.text())
@@ -258,9 +295,7 @@ class Methode_Three(QWidget):
             # Calculer la taille de chaque sous-réseau
             taille_sous_reseau = 2 ** (32 - nouveau_masque)  # Nombre d'adresses dans chaque sous-réseau
 
-            # Convertir l'adresse réseau de départ en entier
-            adresse_reseau = self.AD_RS.text()
-            reseau = ipaddress.IPv4Network(adresse_reseau, strict=False)
+
             adresse_entier = int(reseau.network_address)
 
             self.lbl_decoupeSR.setText(
@@ -299,6 +334,14 @@ class Methode_Three(QWidget):
 
     def verifier_decoupe_ip(self):
         try:
+
+            adresse_reseau = ipaddress.IPv4Network(self.AD_RS.text(), strict=False)
+
+            if adresse_reseau.is_private or adresse_reseau.is_reserved:
+                self.lbl_decoupeIP.setText("L'adresse renseignée est privée.")
+                self.lbl_nbTotHotes.hide()
+                return
+
             if not self.nbHote.text().strip():
                 self.tableauIP.hide()
                 self.lbl_decoupeIP.setText("Possibilité de découpe en fonction des IPs ? : Champ vide.")
@@ -342,8 +385,6 @@ class Methode_Three(QWidget):
             # Vider le tableau avant de le remplir
             self.tableauIP.setRowCount(0)
 
-            # Vérifier que l'adresse initiale est valide
-            adresse_reseau = ipaddress.IPv4Network(self.AD_RS.text(), strict=False)
 
             for i in range(max_sous_reseaux_possibles):
                 # Créer un sous-réseau

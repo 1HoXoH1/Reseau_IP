@@ -22,7 +22,7 @@ class EncodageLess(QWidget):
         self.methode_two = CLMethod_Two()
 
         self.tabs.addTab(self.methode_one, "Calcul Adresse")
-        self.tabs.addTab(self.methode_two, "Appartenance au réseau")
+        self.tabs.addTab(self.methode_two, "Appartenance réseau")
 
 
 
