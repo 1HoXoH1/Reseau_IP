@@ -116,8 +116,16 @@ class PageInscription(QWidget):
         username = self.input_username.text()
         email = self.input_email.text()
         password = self.input_password.text()
-        if username or email or password:
-            QMessageBox.warning(None, 'Inscription Invalide',"Veuillez remplir tout les champs")
+        if username:
+            if email:
+                if not password:
+                    QMessageBox.warning(None, 'Inscription Invalide', "Veuillez remplir le champ 'mot de passe' ")
+                    return 0
+            else:
+                QMessageBox.warning(None, 'Inscription Invalide', "Veuillez remplir tout le champ 'email' ")
+                return 0
+        else:
+            QMessageBox.warning(None, 'Inscription Invalide', "Veuillez remplir tout le champ 'username'")
             return 0
         self.db.insertUser(username, email, password)
         self.go_back()

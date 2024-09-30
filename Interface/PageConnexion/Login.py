@@ -23,7 +23,7 @@ class Login(QWidget):
         # Paramètres de la fenêtre
         self.setWindowTitle('Connexion')
         self.resize(600, 600)
-        self.showFullScreen()
+        # self.showFullScreen()
         self.setWindowIcon(QIcon('assets/icon_reseau_ip.jpg'))
         # Layout principal (Vertical)
         self.main_layout = QVBoxLayout()
