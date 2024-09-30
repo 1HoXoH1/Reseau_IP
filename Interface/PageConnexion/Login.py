@@ -92,7 +92,6 @@ class Login(QWidget):
 
         val = self.ConnexionBd(value, name, pswd)
         if val:
-            QMessageBox.information(None, "Connexion réussie", "L'utilisateur est inscrit dans la base de données")
             try:
                 self.main_page = PageZero()  # Créer une instance de PageZero
                 self.main_page.show()  # Afficher la page principale

@@ -1,3 +1,5 @@
+import re
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QApplication
 import sys
 from PyQt5 import Qt
@@ -67,6 +69,12 @@ class PageInscription(QWidget):
     def create_account(self):
         username = self.input_username.text()
         email = self.input_email.text()
+        regex = r'\b[A-za-z0-9.\%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if not re.fullmatch(regex, email):
+            QMessageBox.warning(None, 'Inscription Invalide', "Veuillez remplir un email correct \n"
+                                                              "test@test.com ")
+            return 0
+
         password = self.input_password.text()
         if username:
             if email:

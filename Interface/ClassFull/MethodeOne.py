@@ -168,9 +168,6 @@ class Methode_One(QWidget):
 
             # Valider si le masque correspond à la classe
             if masque_sous_reseau > masque_class:
-                # Si l'IP est subdivisée en sous-réseaux
-                QMessageBox.information(self, "Sous-réseaux",
-                                        f"L'adresse IP {ip_text} est subdivisée en sous-réseaux avec le masque {masque_text}.")
                 # Appel de la fonction qui traite les sous-réseaux
                 adresse_reseau_sr, broadcast_sr = self.Calc_data_sr(ip_text, masque_text)
                 self.lbl_Adress_SR.setText(f"Adresse Réseau SR: {adresse_reseau_sr}")
@@ -181,9 +178,6 @@ class Methode_One(QWidget):
                 self.Calc_data()
 
             else:
-                # Si l'IP n'est pas subdivisée
-                QMessageBox.warning(self, "Pas de sous-réseaux",
-                                    f"L'adresse IP {ip_text} n'est pas subdivisée avec le masque {masque_text}.")
                 # Calcul des adresses réseau et broadcast en fonction de la classe
                 self.Calc_data()
                 self.lbl_Adress_SR.hide()
