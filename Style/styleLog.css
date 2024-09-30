@@ -1,3 +1,10 @@
+/* === Application globale === */
+QWidget {
+    background-color: #E0E0E0;  /* Couleur de fond gris clair pour tout le programme */
+}
+
+
+/* === QPushButton === */
 QPushButton {
     background-color: #007BFF;  /* Bleu élégant */
     color: white;  /* Texte blanc */
@@ -22,12 +29,21 @@ QPushButton:disabled {
     color: #666666;  /* Texte gris clair pour les boutons désactivés */
 }
 
+
+
+/* === QLabel === */
+
+
+
 QLabel {
     font-size: 16px;  /* Taille de la police */
     font-weight: bold;  /* Texte en gras pour les labels */
     color: #333333;  /* Couleur du texte */
     margin-bottom: 5px;  /* Espace sous le label */
 }
+
+/* === QLineEdit === */
+
 
 QLineEdit {
     background-color: #F5F5F5;  /* Couleur de fond des champs de saisie */
@@ -36,7 +52,7 @@ QLineEdit {
     padding: 8px 12px;  /* Padding interne pour le texte */
     font-size: 14px;  /* Taille de la police pour les champs */
     color: #333333;  /* Couleur du texte */
-    transition: border-color 0.3s ease;  /* Transition douce sur le changement de bordure */
+    transition: border-color 0.3s ease, font-size 0.3s ease;  /* Transition douce */
 }
 
 QLineEdit:hover {
@@ -46,4 +62,107 @@ QLineEdit:hover {
 QLineEdit:focus {
     border-color: #0056b3;  /* Changement de bordure quand le champ est actif */
     background-color: #ffffff;  /* Fond blanc quand le champ est actif */
+    font-size: 16px;  /* Texte légèrement plus grand pour le focus */
 }
+
+
+
+/* === QTabWidget et QTabBar (Onglets) === */
+
+
+
+QTabWidget::pane {
+    border-top: 2px solid #cccccc;  /* Bordure entre les onglets et le contenu */
+    padding: 10px;  /* Espace autour du contenu des onglets */
+}
+
+QTabBar::tab {
+    background-color: #007BFF;  /* Couleur de fond des onglets */
+    color: white;  /* Couleur du texte des onglets */
+    border-radius: 5px 5px 0 0;  /* Coins arrondis pour les onglets */
+    padding: 10px 20px;  /* Padding interne pour le texte */
+    margin-right: 2px;  /* Espace entre les onglets */
+    font-size: 15px;  /* Taille de la police dans les onglets */
+    min-width: 150px;  /* Largeur minimale des onglets */
+    height: 24px;  /* Hauteur fixe des onglets */
+    text-align: center;  /* Centrer le texte */
+    transition: background-color 0.3s ease, transform 0.3s ease;  /* Animation douce au survol */
+}
+
+
+QTabBar::tab:selected {
+    background-color: #0056b3;  /* Couleur plus sombre pour l'onglet sélectionné */
+}
+
+QTabBar::tab:hover {
+    background-color: #0056b3;  /* Couleur plus sombre au survol */
+    transform: scale(1.05);  /* Agrandissement léger au survol */
+}
+
+
+
+/* === QRadioButton === */
+
+
+
+
+QRadioButton {
+    font-size: 16px;  /* Taille de la police */
+    color: #333333;  /* Couleur du texte */
+    spacing: 10px;  /* Espacement entre le bouton radio et le texte */
+}
+
+QRadioButton::indicator {
+    width: 20px;  /* Taille du bouton radio */
+    height: 20px;  /* Taille du bouton radio */
+    border: 2px solid #007BFF;  /* Bordure du bouton radio */
+    border-radius: 10px;  /* Arrondi pour le bouton radio */
+    background-color: #ffffff;  /* Couleur de fond par défaut */
+    transition: background-color 0.3s ease, border-color 0.3s ease;  /* Animation douce pour le changement d'état */
+}
+
+QRadioButton::indicator:checked {
+    background-color: #007BFF;  /* Couleur de fond quand le bouton est sélectionné */
+    border-color: #0056b3;  /* Bordure plus sombre quand sélectionné */
+}
+
+QRadioButton:hover::indicator {
+    border-color: #0056b3;  /* Bordure plus sombre au survol */
+}
+
+
+
+/* === QTableWidget Général === */
+
+
+
+QTableWidget {
+    background-color: #F9F9F9;  /* Couleur de fond douce pour les tableaux */
+    border: 2px solid #DDDDDD;  /* Bordure grise claire autour du tableau */
+    border-radius: 8px;  /* Coins arrondis */
+    gridline-color: #CCCCCC;  /* Couleur des lignes de la grille */
+    font-size: 14px;  /* Taille de la police */
+    padding: 8px;  /* Padding interne autour des cellules */
+}
+
+/* === En-têtes de colonnes et de lignes === */
+QHeaderView::section {
+    background-color: #007BFF;  /* Couleur de fond bleu des en-têtes */
+    color: white;  /* Couleur du texte dans les en-têtes */
+    font-weight: bold;  /* Texte en gras */
+    padding: 10px;  /* Espace interne des en-têtes */
+    border: 1px solid #DDDDDD;  /* Bordure claire autour des en-têtes */
+    text-align: center;  /* Centrer le texte */
+}
+
+QHeaderView::section:hover {
+    background-color: #0056b3;  /* Couleur plus sombre au survol */
+    transition: background-color 0.3s ease;  /* Animation douce sur le survol */
+}
+
+/* === Cellules du tableau === */
+QTableWidget::item {
+    border: 1px solid #DDDDDD;  /* Bordure des cellules */
+    padding: 10px;  /* Espace interne dans les cellules */
+}
+

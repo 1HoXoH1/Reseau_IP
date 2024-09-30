@@ -47,7 +47,7 @@ class CLMethod_Two(QWidget):
         self.HLine.addWidget(self.btn_generate)
 
         # Ajout des labels qui seront sous les QLineEdit
-        self.lbl_dansSR = QLabel('Appartient au réseau : ', self)
+        self.lbl_dansSR = QLabel('Appartient réseau : ', self)
 
         # Ajout des labels à la VLine (sous les champs de saisie)
         self.VLine = QVBoxLayout()

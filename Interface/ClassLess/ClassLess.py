@@ -2,9 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
 import ipaddress
 
-from Projet_1.Interface.ClassFull.MethodeOne import Methode_One
-from Projet_1.Interface.ClassFull.MethodeThree import Methode_Three
-from Projet_1.Interface.ClassFull.MethodeTwo import Methode_Two
+
 from Projet_1.Interface.ClassLess.CLMethodOne import CLMethod_One
 from Projet_1.Interface.ClassLess.CLMethodTwo import CLMethod_Two
 
@@ -29,4 +27,7 @@ class EncodageLess(QWidget):
 
 
         self.main_layout.addWidget(self.tabs)
+        # # Style général de la fenêtre
+        self.setStyleSheet(open("Style/styleLog.css").read())
+
 

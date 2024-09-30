@@ -25,5 +25,9 @@ class PageZero(QWidget):
         self.tabs.addTab(self.less, "ClassLess")
 
         self.main_layout.addWidget(self.tabs)
+        # # Style général de la fenêtre
+        self.setStyleSheet(open("Style/styleLog.css").read())
+
+
 
 

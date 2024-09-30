@@ -28,7 +28,6 @@ class CLMethod_One(QWidget):
 
         self.AD_IP = QLineEdit(self)
         self.AD_IP.setPlaceholderText('Adresse IP')
-        self.AD_IP.setStyleSheet("background-color: #D3D3D3; padding: 8px; font-size: 14px; border-radius: 5px;")
         # Créer un validateur pour forcer l'entrée correcte
         self.AD_IP_validator = QRegExpValidator(adress_regex, self.AD_IP)
         self.AD_IP.setValidator(self.AD_IP_validator)
@@ -36,24 +35,11 @@ class CLMethod_One(QWidget):
 
         self.masque = QLineEdit(self)
         self.masque.setPlaceholderText('Masque de l\'IP')
-        self.masque.setStyleSheet("background-color: #D3D3D3; padding: 8px; font-size: 14px; border-radius: 5px;")
         self.masque_validator = QRegExpValidator(cidr_regex, self.masque)
         self.masque.setValidator(self.masque_validator)
 
         self.btn_generate = QPushButton('Generate', self)
         self.btn_generate.setFixedWidth(120)
-        self.btn_generate.setStyleSheet("""
-                    QPushButton {
-                        background-color: #007BFF;
-                        color: white;
-                        padding: 8px;
-                        font-size: 14px;
-                        border-radius: 5px;
-                    }
-                    QPushButton:hover {
-                        background-color: #0056b3;
-                    }
-                """)
 
         self.HLine.addWidget(self.AD_IP)
         self.HLine.addWidget(self.masque)
@@ -61,10 +47,7 @@ class CLMethod_One(QWidget):
 
         # Ajout des labels qui seront sous les QLineEdit
         self.lbl_SR_Reseau_IP = QLabel('Adresse sous-réseau:', self)
-        self.lbl_SR_Reseau_IP.setStyleSheet("font-size: 14px; padding: 8px;")
-
         self.lbl_SR_Broadcast_IP = QLabel('Adresse Broadcast (SR):', self)
-        self.lbl_SR_Broadcast_IP.setStyleSheet("font-size: 14px; padding: 8px;")
 
 
         # Ajout des labels à la VLine (sous les champs de saisie)
@@ -79,7 +62,6 @@ class CLMethod_One(QWidget):
         self.separator = QFrame()
         self.separator.setFrameShape(QFrame.HLine)
         self.separator.setFrameShadow(QFrame.Sunken)
-        self.separator.setStyleSheet("color: #cccccc;")
 
 
         # Ajout du layout horizontal (pour les QLineEdit) et vertical (pour les labels) dans le layout principal

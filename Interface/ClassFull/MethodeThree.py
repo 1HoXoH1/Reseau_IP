@@ -72,7 +72,7 @@ class Methode_Three(QWidget):
         # Table pour afficher les sous-réseaux (cachée au début)
         self.tableauSR = QTableWidget(self)
         self.tableauSR.setColumnCount(5)
-        self.tableauSR.setMaximumHeight(250)
+        self.tableauSR.setMaximumHeight(450)
         self.tableauSR.setMaximumWidth(1100)
         self.tableauSR.setHorizontalHeaderLabels(
             ['Adresse réseau', 'Première IP', 'Dernière IP', 'Broadcast', "Nombre d'hôtes"])
@@ -84,36 +84,12 @@ class Methode_Three(QWidget):
         # tableau inéditable
         self.tableauSR.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        # Appliquer le style CSS au tableau
-        self.tableauSR.setStyleSheet("""
-                   QTableWidget {
-                       background-color: #f0f0f0;  /* Couleur de fond du tableau */
-                       border: 2px solid #333;     /* Bordure autour du tableau */
-                       gridline-color: #888;       /* Couleur des lignes de séparation */
-                   }
-                   QHeaderView::section {
-                       background-color: #5f5f5f;  /* Couleur de fond des en-têtes */
-                       color: white;               /* Couleur du texte des en-têtes */
-                       font-weight: bold;          /* Texte en gras dans les en-têtes */
-                       border: 1px solid #333;
-                       padding: 4px;
-                   }
-                   QTableWidget::item {
-                       border: 1px solid #ccc;     /* Bordure des cellules */
-                       padding: 4px;
-                   }
-                   QTableWidget::item:selected {
-                       background-color: #87CEFA;  /* Couleur de la ligne sélectionnée */
-                       color: black;               /* Couleur du texte de la ligne sélectionnée */
-                   }
-               """)
-
         self.lbl_decoupeIP = QLabel('Possibilité de découpe en fonction des IPs ? : ', self)
 
         # Table pour afficher les sous-réseaux (cachée au début)
         self.tableauIP = QTableWidget(self)
         self.tableauIP.setColumnCount(5)
-        self.tableauIP.setMaximumHeight(250)
+        self.tableauIP.setMaximumHeight(450)
         self.tableauIP.setMaximumWidth(1100)
         self.tableauIP.setHorizontalHeaderLabels(
             ['Adresse réseau', 'Première IP', 'Dernière IP', 'Broadcast', "Nombre d'hôtes"])
@@ -129,30 +105,6 @@ class Methode_Three(QWidget):
         self.nbHote.hide()
         self.lbl_decoupeIP.hide()
 
-        # Appliquer le style CSS au tableau
-        self.tableauIP.setStyleSheet("""
-                           QTableWidget {
-                               background-color: #f0f0f0;  /* Couleur de fond du tableau */
-                               border: 2px solid #333;     /* Bordure autour du tableau */
-                               gridline-color: #888;       /* Couleur des lignes de séparation */
-                           }
-                           QHeaderView::section {
-                               background-color: #5f5f5f;  /* Couleur de fond des en-têtes */
-                               color: white;               /* Couleur du texte des en-têtes */
-                               font-weight: bold;          /* Texte en gras dans les en-têtes */
-                               border: 1px solid #333;
-                               padding: 4px;
-                           }
-                           QTableWidget::item {
-                               border: 1px solid #ccc;     /* Bordure des cellules */
-                               padding: 4px;
-                           }
-                           QTableWidget::item:selected {
-                               background-color: #87CEFA;  /* Couleur de la ligne sélectionnée */
-                               color: black;               /* Couleur du texte de la ligne sélectionnée */
-                           }
-                       """)
-
         # Ajout des labels à la VLine (sous les champs de saisie)
         self.VLine = QVBoxLayout()
         self.VLine.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -163,6 +115,11 @@ class Methode_Three(QWidget):
         self.VLine.addWidget(self.tableauSR)
         self.VLine.addWidget(self.lbl_decoupeIP)
         self.VLine.addWidget(self.tableauIP)
+
+        # gère l'allignement
+        self.VLine.setAlignment(self.lbl_nbTotHotes, Qt.AlignTop)
+        self.VLine.setAlignment(self.tableauSR, Qt.AlignTop)
+        self.VLine.setAlignment(self.tableauIP, Qt.AlignTop)
 
         # Ajout du layout horizontal (pour les QLineEdit) et vertical (pour les labels) dans le layout principal
         self.Master_Layout.addLayout(self.HLine)  # Les QLineEdit en haut
