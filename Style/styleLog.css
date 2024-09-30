@@ -1,59 +1,49 @@
-/* Style général pour la fenêtre principale */
-QWidget {
-    background-color: #F3F4F6;
-}
-
-/* Style pour le titre */
-QLabel#label_title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* Style des champs de texte (QLineEdit) */
-QLineEdit {
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #B0BEC5;
-    border-radius: 5px;
-    margin: 10px 0;
-    background-color: #FFFFFF;
-}
-
-QLineEdit:focus {
-    border-color: #42A5F5;
-}
-
-/* Style des boutons */
 QPushButton {
-    padding: 10px;
-    font-size: 16px;
-    color: white;
-    background-color: #42A5F5;
-    border: none;
-    border-radius: 5px;
-    margin: 10px 0;
+    background-color: #007BFF;  /* Bleu élégant */
+    color: white;  /* Texte blanc */
+    border: none;  /* Pas de bordure */
+    border-radius: 5px;  /* Coins arrondis */
+    padding: 10px 20px;  /* Padding autour du texte */
+    font-size: 16px;  /* Taille de police */
+    font-weight: bold;  /* Texte en gras */
+    transition: background-color 0.3s ease;  /* Animation douce sur le survol */
 }
 
 QPushButton:hover {
-    background-color: #1E88E5;
-    cursor: pointer;
+    background-color: #0056b3;  /* Couleur plus sombre au survol */
 }
 
 QPushButton:pressed {
-    background-color: #1565C0;
+    background-color: #003f7f;  /* Couleur encore plus sombre lorsque le bouton est pressé */
 }
 
-/* Style des labels cliquables (lien) */
-QLabel#btn_pswd_forget, QLabel#btn_Create_Account {
-    font-size: 14px;
-    color: #42A5F5;
-    margin-top: 10px;
+QPushButton:disabled {
+    background-color: #cccccc;  /* Bouton désactivé en gris */
+    color: #666666;  /* Texte gris clair pour les boutons désactivés */
 }
 
-QLabel:hover {
-    color: #1E88E5;
-    cursor: pointer;
+QLabel {
+    font-size: 16px;  /* Taille de la police */
+    font-weight: bold;  /* Texte en gras pour les labels */
+    color: #333333;  /* Couleur du texte */
+    margin-bottom: 5px;  /* Espace sous le label */
+}
+
+QLineEdit {
+    background-color: #F5F5F5;  /* Couleur de fond des champs de saisie */
+    border: 2px solid #cccccc;  /* Bordure grise */
+    border-radius: 5px;  /* Coins arrondis */
+    padding: 8px 12px;  /* Padding interne pour le texte */
+    font-size: 14px;  /* Taille de la police pour les champs */
+    color: #333333;  /* Couleur du texte */
+    transition: border-color 0.3s ease;  /* Transition douce sur le changement de bordure */
+}
+
+QLineEdit:hover {
+    border-color: #007BFF;  /* Changement de bordure au survol */
+}
+
+QLineEdit:focus {
+    border-color: #0056b3;  /* Changement de bordure quand le champ est actif */
+    background-color: #ffffff;  /* Fond blanc quand le champ est actif */
 }

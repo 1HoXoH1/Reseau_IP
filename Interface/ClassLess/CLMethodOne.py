@@ -91,6 +91,8 @@ class CLMethod_One(QWidget):
 
         # Connecter le bouton au générateur d'adresse IP
         self.btn_generate.clicked.connect(self.generator_Ip_ClassFull)
+        # # Style général de la fenêtre
+        self.setStyleSheet(open("Style/styleLog.css").read())
 
     def generator_Ip_ClassFull(self):
         ip = self.AD_IP.text().strip()  # Récupération de l'adresse IP et suppression des espaces

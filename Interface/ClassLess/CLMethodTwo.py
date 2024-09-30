@@ -65,6 +65,8 @@ class CLMethod_Two(QWidget):
 
         # Connecter le bouton au générateur d'adresse IP
         self.btn_generate.clicked.connect(self.verifier_appartenance_reseau)
+        # # Style général de la fenêtre
+        self.setStyleSheet(open("Style/styleLog.css").read())
 
     def verifier_appartenance_reseau(self):
         ip_text = self.AD_IP.text()

@@ -86,7 +86,8 @@ class Methode_One(QWidget):
 
         # Connecter le bouton au générateur d'adresse IP
         self.btn_generate.clicked.connect(self.onGenerateClicked)
-
+        # # Style général de la fenêtre
+        self.setStyleSheet(open("Style/styleLog.css").read())
 
     def Calc_data(self):
         ip_str = self.AD_IP.text()

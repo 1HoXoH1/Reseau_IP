@@ -48,8 +48,7 @@ class forgive_mdp(QWidget):
         self.master_layout.addWidget(self.btn_cancel)
 
         # Appliquer le style CSS
-        self.setStyleSheet(self.style())
-
+        self.setStyleSheet(open("Style/styleLog.css").read())
     def change_password(self):
         from Projet_1.Interface.PageConnexion.Login import Login
 
@@ -88,47 +87,4 @@ class forgive_mdp(QWidget):
         self.log.show()
         self.close()
 
-    def style(self):
-        return """
-            QWidget {
-                background-color: #F0F4F7;
-            }
-            QLabel {
-                font-size: 16px;
-                font-weight: bold;
-                color: #333333;
-                margin-bottom: 10px;
-            }
-            QLineEdit {
-                padding: 10px;
-                font-size: 16px;
-                border: 2px solid #B0BEC5;
-                border-radius: 5px;
-                margin-bottom: 20px;
-                background-color: #FFFFFF;
-            }
-            QLineEdit:focus {
-                border-color: #42A5F5;
-            }
-            QPushButton {
-                padding: 10px;
-                font-size: 16px;
-                color: white;
-                background-color: #42A5F5;
-                border: none;
-                border-radius: 5px;
-                margin-top: 10px;
-                transition: background-color 0.3s ease;
-            }
-            QPushButton:hover {
-                background-color: #1E88E5;
-            }
-            QPushButton:pressed {
-                background-color: #1565C0;
-            }
-            QPushButton:disabled {
-                background-color: #B0BEC5;
-                color: #ECEFF1;
-                cursor: not-allowed;
-            }
-        """
+

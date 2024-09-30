@@ -80,6 +80,8 @@ class Methode_Two(QWidget):
 
         # Connecter le bouton au générateur d'adresse IP
         self.btn_generate_2.clicked.connect(self.SameNetwork)
+        # # Style général de la fenêtre
+        self.setStyleSheet(open("Style/styleLog.css").read())
 
     def SameNetwork(self):
         # Récupérer les valeurs des champs de saisie

@@ -172,6 +172,8 @@ class Methode_Three(QWidget):
 
         # Connecter le bouton au générateur d'adresse IP
         self.btn_generate.clicked.connect(self.lancer_prog)
+        # # Style général de la fenêtre
+        self.setStyleSheet(open("Style/styleLog.css").read())
 
     def gerer_fonction_a_afficher(self):
         if self.radio_SR.isChecked():
