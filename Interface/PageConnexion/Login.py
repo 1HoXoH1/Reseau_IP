@@ -14,6 +14,7 @@ class Login(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.main_page = None
         self.db = Database()
         self.db.get_data()
         self.inscription_page = None
@@ -91,14 +92,18 @@ class Login(QWidget):
 
         val = self.ConnexionBd(value, name, pswd)
         if val:
-            QMessageBox.information(None, "Connexion réussi", "L'user est inscrit dans la bd")
-            self.main_page = PageZero()  # Créer une instance de PageZero
-            self.main_page.show()  # Afficher la page principale
-            self.close()
+            QMessageBox.information(None, "Connexion réussie", "L'utilisateur est inscrit dans la base de données")
+            try:
+                self.main_page = PageZero()  # Créer une instance de PageZero
+                self.main_page.show()  # Afficher la page principale
+                self.hide()  # Utiliser hide() au lieu de close() pour éviter de fermer complètement la fenêtre
+            except Exception as e:
+                print(f"Erreur lors de l'ouverture de PageZero: {e}")
+                QMessageBox.critical(self, "Erreur", f"Une erreur est survenue lors de l'ouverture de la page : {e}")
         else:
-            QMessageBox.warning(None, "Erreur log", "L'utilisateur n'a pas de compte\n "
-                                                    "ou le mot de passe ou le surnom est erroné\n"
-                                                    "S'il vous plait créé un compte")
+            QMessageBox.warning(None, "Erreur de connexion", "L'utilisateur n'a pas de compte, "
+                                                             "ou le mot de passe ou le surnom est erroné.\n"
+                                                             "Veuillez créer un compte.")
 
     def ConnexionBd(self, value, log, pswd):
         #mettre le pswd en byte!!! pas le laisser en string sinon ça foire
@@ -114,6 +119,7 @@ class Login(QWidget):
 
 
         if query.exec_():
+
             # Récupérer les résultats et les imprimer
             if query.next():
                 password_hashed = query.value(3)
