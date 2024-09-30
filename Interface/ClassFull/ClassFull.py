@@ -29,3 +29,5 @@ class Encodage(QWidget):
 
         self.main_layout.addWidget(self.tabs)
 
+        self.setStyleSheet(open("../Style/styleLog.css").read())
+

@@ -26,3 +26,9 @@ class PageZero(QWidget):
 
         self.main_layout.addWidget(self.tabs)
 
+
+if __name__ == '__main__':
+    app = QApplication([])
+    login = PageZero()
+    login.show()
+    app.exec_()
