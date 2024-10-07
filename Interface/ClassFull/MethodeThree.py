@@ -4,11 +4,15 @@ from PyQt5.QtWidgets import *
 import ipaddress
 import math
 
+from Projet_1.Interface.PopUpPages.NbHotesBySR import HotesBySR
+
 
 class Methode_Three(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.max_value = None
+        self.newPage = None
         self.input_group = QGroupBox("Choix de la découpe")
         self.radio_SR = QRadioButton("Découpe en sous réseaux", self)
         self.radio_IP = QRadioButton("Découpe en IP", self)
@@ -156,7 +160,8 @@ class Methode_Three(QWidget):
         self.setLayout(self.Master_Layout)
 
         # Connecter le bouton au générateur d'adresse IP
-        self.btn_generate.clicked.connect(self.lancer_prog)
+        # self.btn_generate.clicked.connect(self.lancer_prog)
+        self.btn_generate.clicked.connect(self.open_page_pop_up)
         # # Style général de la fenêtre
         self.setStyleSheet(open("Style/styleLog.css").read())
 
@@ -420,3 +425,31 @@ class Methode_Three(QWidget):
             self.lbl_decoupeIP.setText(f"Erreur : {str(e)}")
         except Exception as e:
             self.lbl_decoupeIP.setText(f"Erreur inattendue : {str(e)}")
+
+    def open_page_pop_up(self):
+        # Récupérer le texte du champ nbSR et supprimer les espaces
+        nb_sr_text = self.nbSR.text().strip()
+
+        if not nb_sr_text:  # Si le champ est vide
+            QMessageBox.warning(self, "Erreur", "Veuillez entrer un nombre de sous-réseaux.")
+            return
+
+        try:
+            # Convertir la valeur en entier
+            nb_sr = int(nb_sr_text)
+
+            if nb_sr <= 0:  # Vérifier si le nombre est valide (positif)
+                QMessageBox.warning(self, "Erreur", "Le nombre de sous-réseaux doit être supérieur à 0.")
+                return
+
+            # Ouvrir la deuxième fenêtre avec le nombre de sous-réseaux validé
+            self.newPage = HotesBySR(nb_sr)
+            self.newPage.show()
+            self.newPage.max_value_signal.connect(self.handle_max_value_signal)
+
+        except ValueError:  # Si la conversion en entier échoue
+            QMessageBox.warning(self, "Erreur", "Veuillez entrer un nombre valide pour le nombre de sous-réseaux.")
+
+    def handle_max_value_signal(self, value):
+        self.max_value = value
+        print(self.max_value)

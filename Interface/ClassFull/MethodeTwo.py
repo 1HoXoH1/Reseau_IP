@@ -126,4 +126,3 @@ class Methode_Two(QWidget):
             # Gestion des erreurs de format incorrect
             self.lbl_rep.setText("Erreur dans l'IP, le masque ou l'adresse réseau.")
 
-#coucou

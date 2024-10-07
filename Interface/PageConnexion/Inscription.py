@@ -2,8 +2,6 @@ import re
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QApplication
-import sys
-from PyQt5 import Qt
 from Projet_1.Database.DataBase import Database
 
 
@@ -77,6 +75,21 @@ class PageInscription(QWidget):
             return 0
 
         password = self.input_password.text()
+
+        if len(password) < 9:
+            QMessageBox.warning(None, "Inscription Invalide", "Veuillez noter que votre mot de passe doit contenir au "
+                                                             "minimum 9 caractères.")
+            return 0
+        if not re.search(r'[A-Z]', password):
+            QMessageBox.warning(None, "Inscription Invalide", "Veuillez noter que votre mot de passe doit contenir au "
+                                "une majuscule.")
+            return 0
+
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            QMessageBox.warning(None, "Inscription Invalide", "Veuillez noter que votre mot de passe doit contenir au "
+                               "un caractère spécial")
+            return 0
+
         if username:
             if email:
                 if not password:
@@ -99,4 +112,5 @@ class PageInscription(QWidget):
             self.close()  # Assurez-vous que cela ne cause pas de problème
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Une erreur est survenue : {e}")
+
 
