@@ -201,3 +201,5 @@ class Methode_One(QWidget):
         except ValueError as e:
             QMessageBox.critical(self, "Erreur", f"Entrée invalide : {e}")
 
+
+# coucou
