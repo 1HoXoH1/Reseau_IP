@@ -222,7 +222,7 @@ QGroupBox {
 
 QGroupBox::title {
     subcontrol-origin: margin;            /* Position du titre */
-    left: 5px;                          /* Décalage du titre */
+    left: 27px;                          /* Décalage du titre */
      padding: 7px;                     /*   Espacement autour du titre */
     color: #007BFF;                      /* Couleur du titre */
     font-weight: bold;                   /* Mettre le titre en gras */

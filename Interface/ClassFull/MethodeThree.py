@@ -73,8 +73,8 @@ class Methode_Three(QWidget):
 
         self.btn_generate = QPushButton('Vérification', self)
 
-        self.HLine.addWidget(self.nbSR)
         self.HLine.addWidget(self.nbHote)
+        self.HLine.addWidget(self.nbSR)
         self.HLine.addWidget(self.AD_RS)
         self.HLine.addWidget(self.btn_generate)
 
@@ -182,7 +182,6 @@ class Methode_Three(QWidget):
         return
 
     def afficher_decoupe_IP(self):
-        self.nbSR.hide()
         self.nbHote.show()
         self.tableauSR.hide()
         self.lbl_decoupeSR.hide()
@@ -291,7 +290,7 @@ class Methode_Three(QWidget):
             nouveau_masque = masque_initial + bits_necessaires
 
             #Vérification si le masque est au dessus de 30
-            if (nouveau_masque >= 31):
+            if nouveau_masque >= 31:
                 self.lbl_decoupeSR.setText(
                     f"Impossible de réaliser la découpe. Le masque ne peut pas être supérieur à 30. Masque actuel : {nouveau_masque}")
                 self.tableauSR.hide()
@@ -299,6 +298,12 @@ class Methode_Three(QWidget):
 
             # Calculer la taille de chaque sous-réseau
             taille_sous_reseau = 2 ** (32 - nouveau_masque)  # Nombre d'adresses dans chaque sous-réseau
+
+            if self.max_value > taille_sous_reseau:
+                self.lbl_decoupeSR.setText(
+                    f"Impossible de réaliser la découpe. Le Nombre d'hôtes pour les sous réseaux est trop grand. \nMaximum d'hôtes : {taille_sous_reseau}.\nNombre d'hôtes demandés : {self.max_value}")
+                self.tableauSR.hide()
+                return
 
 
             adresse_entier = int(reseau.network_address)
@@ -339,11 +344,10 @@ class Methode_Three(QWidget):
 
     def verifier_decoupe_ip(self):
         try:
-
             adresse_reseau = ipaddress.IPv4Network(self.AD_RS.text(), strict=False)
 
-            if adresse_reseau.is_private or adresse_reseau.is_reserved:
-                self.lbl_decoupeIP.setText("L'adresse renseignée est privée.")
+            if adresse_reseau.is_reserved:
+                self.lbl_decoupeIP.setText("L'adresse renseignée est réservée.")
                 self.lbl_nbTotHotes.hide()
                 return
 
@@ -358,7 +362,9 @@ class Methode_Three(QWidget):
                 return
 
             # Récupérer les valeurs saisies
+            nombre_sr = int(self.nbSR.text())
             nombre_ip_par_sr = int(self.nbHote.text())
+
             masque_initial = self.calculer_masque_initial()
 
             # Calculer le nombre total d'hôtes
@@ -376,8 +382,13 @@ class Methode_Three(QWidget):
                 raise ValueError("Le masque nécessaire ne peut pas être inférieur au masque initial.")
 
             # Calculer le nombre de sous-réseaux possibles
-            # C'est ici que le calcul doit être corrigé
             max_sous_reseaux_possibles = 2 ** (masque_nouveau - masque_initial)
+
+            if max_sous_reseaux_possibles < nombre_sr:
+                self.tableauIP.hide()
+                self.lbl_decoupeIP.setText(
+                    f"Impossible de réaliser la découpe. Maximum de sous réseaux possible : {max_sous_reseaux_possibles}.\nSous réseaux demandés : {nombre_sr}")
+                return
 
             # Afficher les résultats
             self.lbl_decoupeIP.setText(
@@ -385,13 +396,17 @@ class Methode_Three(QWidget):
 
             if max_sous_reseaux_possibles <= 0:
                 self.lbl_decoupeIP.setText("Impossible de réaliser la découpe avec le nombre d'IP demandé.")
+                self.tableauIP.hide()
                 return
 
             # Vider le tableau avant de le remplir
             self.tableauIP.setRowCount(0)
 
+            # Incrémentation des adresses IP par la taille du sous-réseau
+            taille_sous_reseau = 2 ** (
+                        32 - masque_nouveau)  # Taille du sous-réseau en adresses IP (y compris réseau et broadcast)
 
-            for i in range(max_sous_reseaux_possibles):
+            for i in range(nombre_sr):
                 # Créer un sous-réseau
                 sous_reseau = ipaddress.IPv4Network((str(adresse_reseau.network_address), masque_nouveau), strict=False)
                 premiere_ip = sous_reseau.network_address + 1
@@ -409,16 +424,18 @@ class Methode_Three(QWidget):
                 self.tableauIP.setItem(i, 3, QTableWidgetItem(str(adresse_broadcast)))
                 self.tableauIP.setItem(i, 4, QTableWidgetItem(str(nombre_hotes)))
 
-                # Incrémenter l'adresse pour le prochain sous-réseau
+                # Incrémenter l'adresse pour le prochain sous-réseau de la taille du sous-réseau actuel
+                prochaine_adresse = sous_reseau.network_address + taille_sous_reseau
+
                 # Vérifier que la prochaine adresse ne dépasse pas 255.255.255.255
-                if adresse_reseau.broadcast_address >= ipaddress.IPv4Address('255.255.255.255'):
+                if prochaine_adresse >= ipaddress.IPv4Address('255.255.255.255'):
                     break  # Sortir de la boucle si nous avons atteint la limite des adresses IPv4
 
-                # Incrémenter l'adresse pour le prochain sous-réseau
-                adresse_reseau = ipaddress.IPv4Network((str(adresse_reseau.broadcast_address + 1), masque_initial),
-                                                       strict=False)
+                # Mettre à jour l'adresse réseau pour le prochain sous-réseau
+                adresse_reseau = ipaddress.IPv4Network((str(prochaine_adresse), masque_nouveau), strict=False)
 
             # Afficher le tableau après l'avoir rempli
+            self.tableauSR.hide()
             self.tableauIP.show()
 
         except ValueError as e:
@@ -427,29 +444,34 @@ class Methode_Three(QWidget):
             self.lbl_decoupeIP.setText(f"Erreur inattendue : {str(e)}")
 
     def open_page_pop_up(self):
-        # Récupérer le texte du champ nbSR et supprimer les espaces
-        nb_sr_text = self.nbSR.text().strip()
 
-        if not nb_sr_text:  # Si le champ est vide
-            QMessageBox.warning(self, "Erreur", "Veuillez entrer un nombre de sous-réseaux.")
-            return
+        if self.radio_SR.isChecked():
+            # Récupérer le texte du champ nbSR et supprimer les espaces
+            nb_sr_text = self.nbSR.text().strip()
 
-        try:
-            # Convertir la valeur en entier
-            nb_sr = int(nb_sr_text)
-
-            if nb_sr <= 0:  # Vérifier si le nombre est valide (positif)
-                QMessageBox.warning(self, "Erreur", "Le nombre de sous-réseaux doit être supérieur à 0.")
+            if not nb_sr_text:  # Si le champ est vide
+                QMessageBox.warning(self, "Erreur", "Veuillez entrer un nombre de sous-réseaux.")
                 return
 
-            # Ouvrir la deuxième fenêtre avec le nombre de sous-réseaux validé
-            self.newPage = HotesBySR(nb_sr)
-            self.newPage.show()
-            self.newPage.max_value_signal.connect(self.handle_max_value_signal)
+            try:
+                # Convertir la valeur en entier
+                nb_sr = int(nb_sr_text)
 
-        except ValueError:  # Si la conversion en entier échoue
-            QMessageBox.warning(self, "Erreur", "Veuillez entrer un nombre valide pour le nombre de sous-réseaux.")
+                if nb_sr <= 0:  # Vérifier si le nombre est valide (positif)
+                    QMessageBox.warning(self, "Erreur", "Le nombre de sous-réseaux doit être supérieur à 0.")
+                    return
+
+                # Ouvrir la deuxième fenêtre avec le nombre de sous-réseaux validé
+                self.newPage = HotesBySR(nb_sr)
+                self.newPage.show()
+                self.newPage.max_value_signal.connect(self.handle_max_value_signal)
+
+            except ValueError:  # Si la conversion en entier échoue
+                QMessageBox.warning(self, "Erreur", "Veuillez entrer un nombre valide pour le nombre de sous-réseaux.")
+        else:
+            self.lancer_prog()
 
     def handle_max_value_signal(self, value):
         self.max_value = value
-        print(self.max_value)
+        self.lancer_prog()
+

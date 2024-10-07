@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
+
 
 class HotesBySR(QWidget):
     # Signal personnalisé qui transmet la valeur maximale à la première page
@@ -12,8 +13,11 @@ class HotesBySR(QWidget):
         self.input_fields = []  # Liste pour stocker les références des champs QLineEdit
         self.initUI()
 
+        self.setStyleSheet(open("Style/styleLog.css").read())
+
     def initUI(self):
         layout = QVBoxLayout()  # Layout principal pour la fenêtre
+        layout.setAlignment(Qt.AlignTop)  # Aligner tous les éléments en haut
 
         self.create_layout(layout)
 
@@ -45,8 +49,6 @@ class HotesBySR(QWidget):
 
                 # Émettre le signal avec la valeur maximale
                 self.max_value_signal.emit(self.max_value)
-
-                print(self.max_value)
                 self.close()
             else:
                 QMessageBox.warning(self, "Erreur", "Aucune valeur valide n'a été saisie.")
