@@ -1,3 +1,4 @@
+from PyQt5.QtGui import QIcon
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QApplication, QMessageBox
 from PyQt5.QtCore import Qt
@@ -12,7 +13,7 @@ class forgive_mdp(QWidget):
         self.log = None
         self.setWindowTitle("Changer de mot de passe")
         self.resize(600, 600)
-
+        self.setWindowIcon(QIcon('assets/icon_reseau_ip.jpg'))
         # Master layout
         self.master_layout = QVBoxLayout(self)
         self.setLayout(self.master_layout)

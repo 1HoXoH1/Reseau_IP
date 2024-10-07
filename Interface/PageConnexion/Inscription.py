@@ -1,5 +1,6 @@
 import re
 
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QApplication
 import sys
 from PyQt5 import Qt
@@ -21,7 +22,7 @@ class PageInscription(QWidget):
 
         self.setWindowTitle('Inscription')
         self.resize(600, 600)
-
+        self.setWindowIcon(QIcon('assets/icon_reseau_ip.jpg'))
         layout = QVBoxLayout()
         layout.setSpacing(20)  # Espace entre les widgets
 

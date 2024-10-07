@@ -1,3 +1,5 @@
+from PyQt5.QtGui import QIcon
+
 from Projet_1.Interface.ClassFull.ClassFull import *
 from Projet_1.Interface.ClassLess.ClassLess import *
 
@@ -7,7 +9,7 @@ class PageZero(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Reseau IP')
-
+        self.setWindowIcon(QIcon('assets/icon_reseau_ip.jpg'))
         self.resize(1200, 980)
         #self.showFullScreen()
 
