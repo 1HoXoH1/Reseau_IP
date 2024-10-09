@@ -27,7 +27,7 @@ class HotesBySR(QWidget):
 
         layout.addWidget(btn_max)
         self.setWindowTitle("Nombre d'hôtes par sous-réseau")
-        self.resize(1200, 980)
+        self.resize(600, 600)
         self.setLayout(layout)
 
     def create_layout(self, layout):
