@@ -1,7 +1,7 @@
+import re
+
 from PyQt5.QtGui import QIcon
-from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QApplication, QMessageBox
-from PyQt5.QtCore import Qt
 
 
 
@@ -19,7 +19,7 @@ class forgive_mdp(QWidget):
         self.setLayout(self.master_layout)
 
         # Labels et inputs pour l'email, le nouveau mdp et la confirmation
-        self.lbl_email = QLabel("Nom d'utilisateur", self)
+        self.lbl_email = QLabel("E-mail", self)
         self.Ln_email = QLineEdit(self)
 
         self.lbl_new_password = QLabel("Nouveau mot de passe", self)
@@ -73,14 +73,31 @@ class forgive_mdp(QWidget):
 
 
     def IsSame(self):
-        first_pswd = self.Ln_new_password.text()
-        second_pswd = self.Ln_confirm_new_password.text()
-        email = self.Ln_email.text().strip()
+        password = self.Ln_new_password.text()
+        print(password)
+        if len(password) < 9:
+            QMessageBox.warning(None, "Inscription Invalide", "Veuillez noter que votre mot de passe doit contenir au "
+                                                             "minimum 9 caractères.")
+            return 0
+        if not re.search(r'[A-Z]', password):
+            QMessageBox.warning(None, "Inscription Invalide", "Veuillez noter que votre mot de passe doit contenir au "
+                                "une majuscule.")
+            return 0
 
-        if first_pswd == second_pswd and email:
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            QMessageBox.warning(None, "Inscription Invalide", "Veuillez noter que votre mot de passe doit contenir au "
+                               "un caractère spécial")
+            return 0
+
+        second_pswd = self.Ln_confirm_new_password.text()
+        # permet d'enlever les éventuels espace en début et fin de chaine de caractères
+        email = self.Ln_email.text().strip()
+        if password == second_pswd and email:
             self.btn_submit.setDisabled(False)
         else:
             self.btn_submit.setDisabled(True)
+
+
 
     def getBack(self):
         from Projet_1.Interface.PageConnexion.Login import Login
