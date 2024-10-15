@@ -91,51 +91,41 @@ class Methode_One(QWidget):
         ip_str = self.AD_IP.text()
         masque_str = self.masque.text()
 
-        try:
-            # Conversion des chaînes en objets IPv4
-            ip = ipaddress.IPv4Address(ip_str)
-            masque = ipaddress.IPv4Network(f"0.0.0.0/{masque_str}", strict=False).netmask
+        # Conversion des chaînes en objets IPv4
+        ip = ipaddress.IPv4Address(ip_str)
+        masque = ipaddress.IPv4Network(f"0.0.0.0/{masque_str}", strict=False).netmask
 
+        # Calcul de l'adresse réseau
+        adresse_reseau = ipaddress.IPv4Address(int(ip) & int(masque))
 
-            # Calcul de l'adresse réseau
-            adresse_reseau = ipaddress.IPv4Address(int(ip) & int(masque))
+        # Calcul de l'adresse de broadcast
+        broadcast = ipaddress.IPv4Address(int(adresse_reseau) | (int(masque) ^ 0xFFFFFFFF))
 
-            # Calcul de l'adresse de broadcast
-            broadcast = ipaddress.IPv4Address(int(adresse_reseau) | (int(masque) ^ 0xFFFFFFFF))
+        # Mise à jour des labels avec les valeurs calculées
+        self.lbl_AD_reseau.setText(f"Adresse Réseau: {adresse_reseau}")
+        self.lbl_Broadcast_IP.setText(f"Adresse Broadcast: {broadcast}")
 
-            # Mise à jour des labels avec les valeurs calculées
-            self.lbl_AD_reseau.setText(f"Adresse Réseau: {adresse_reseau}")
-            self.lbl_Broadcast_IP.setText(f"Adresse Broadcast: {broadcast}")
-            return str(adresse_reseau), str(broadcast)
-        except ValueError:
-            # Gestion des erreurs de format incorrect
-            return "Erreur dans l'IP ou le masque", "Erreur"
-
+        return str(adresse_reseau), str(broadcast)
     def Calc_data_sr(self, ip_str, masque_str):
-        try:
-            # Conversion de la chaîne en objet IPv4
-            ip = ipaddress.IPv4Address(ip_str)
+        # Conversion de la chaîne en objet IPv4
+        ip = ipaddress.IPv4Address(ip_str)
 
-            # Détermination du masque de classe
-            if ip.is_private or ip.is_loopback or ip.is_reserved:
-                masque = ipaddress.IPv4Network('10.0.0.0/8', strict=False).prefixlen  # Classe A
-            elif ip in ipaddress.IPv4Network('172.16.0.0/12'):
-                masque = ipaddress.IPv4Network('172.16.0.0/12', strict=False).prefixlen  # Classe B
-            elif ip in ipaddress.IPv4Network('192.168.0.0/16'):
-                masque = ipaddress.IPv4Network('192.168.0.0/16', strict=False).prefixlen  # Classe C
-            else:
-                masque = masque_str
+        # Détermination du masque de classe
+        if ip.is_private or ip.is_reserved:
+            masque = ipaddress.IPv4Network('10.0.0.0/8', strict=False).prefixlen  # Classe A
+        elif ip in ipaddress.IPv4Network('172.16.0.0/12'):
+            masque = ipaddress.IPv4Network('172.16.0.0/12', strict=False).prefixlen  # Classe B
+        elif ip in ipaddress.IPv4Network('192.168.0.0/16'):
+            masque = ipaddress.IPv4Network('192.168.0.0/16', strict=False).prefixlen  # Classe C
+        else:
+            masque = masque_str
 
-            # Calcul de l'adresse réseau et de broadcast en utilisant ip_str et masque_str
-            reseau = ipaddress.IPv4Network(f"{ip}/{masque}", strict=False)
-            adresse_reseau_sr = reseau.network_address
-            broadcast_sr = reseau.broadcast_address
+        # Calcul de l'adresse réseau et de broadcast en utilisant ip_str et masque_str
+        reseau = ipaddress.IPv4Network(f"{ip}/{masque}", strict=False)
+        adresse_reseau_sr = reseau.network_address
+        broadcast_sr = reseau.broadcast_address
 
-            return str(adresse_reseau_sr), str(broadcast_sr)
-
-        except ValueError:
-            # Gestion des erreurs de format incorrect
-            return "Erreur dans l'IP", "Erreur"
+        return str(adresse_reseau_sr), str(broadcast_sr)
 
     def onGenerateClicked(self):
         # Cette méthode est toujours appelée lorsque le bouton est cliqué
@@ -147,59 +137,82 @@ class Methode_One(QWidget):
 
         self.lbl_Broadcast_IP.show()
 
+        if not self.AD_IP.text().strip():
+            self.lbl_AD_reseau.setText("Aucune adresse IP.")
+            self.lbl_Adress_SR.hide()
+            self.lbl_Broadcast_SR.hide()
+            self.lbl_Broadcast_IP.hide()
+            return
+
+        if not self.masque.text().strip():
+            self.lbl_AD_reseau.setText("Aucun masque.")
+            self.lbl_Adress_SR.hide()
+            self.lbl_Broadcast_SR.hide()
+            self.lbl_Broadcast_IP.hide()
+            return
+
+        # Convertir l'adresse IP et le masque en objets ip_address et ip_network
+        adresse_ip = ipaddress.ip_address(ip_text)
+
         try:
-            # Convertir l'adresse IP et le masque en objets ip_address et ip_network
-            adresse_ip = ipaddress.ip_address(ip_text)
-            masque_sous_reseau = ipaddress.ip_network(f"0.0.0.0/{masque_text}", strict=False).netmask
+            masque_sous_reseau = ipaddress.IPv4Network(f"0.0.0.0/{masque_text}", strict=False).netmask
+        except ValueError:
+            self.lbl_AD_reseau.setText("Le masque renseigné n'est pas valide.")
+            self.lbl_Adress_SR.hide()
+            self.lbl_Broadcast_SR.hide()
+            self.lbl_Broadcast_IP.hide()
+            return
 
-            # Vérifier si l'adresse IP est réservée ou privée
-            if adresse_ip.is_reserved:
-                self.lbl_AD_reseau.setText("L'adresse renseignée est réservée.")
-                self.lbl_Adress_SR.hide()
-                self.lbl_Broadcast_SR.hide()
-                self.lbl_Broadcast_IP.hide()
-                return
-            if adresse_ip.is_private:
-                self.lbl_AD_reseau.setText("L'adresse renseignée est privée.")
-                self.lbl_Adress_SR.hide()
-                self.lbl_Broadcast_SR.hide()
-                self.lbl_Broadcast_IP.hide()
-                return
+        # Vérifier si l'adresse IP est réservée ou privée
+        if adresse_ip.is_reserved:
+            self.lbl_AD_reseau.setText("L'adresse renseignée est réservée.")
+            self.lbl_Adress_SR.hide()
+            self.lbl_Broadcast_SR.hide()
+            self.lbl_Broadcast_IP.hide()
+            return
 
-            # Vérification de la classe de l'IP
-            premier_octet = int(ip_text.split('.')[0])
+        if adresse_ip.is_private:
+            self.lbl_AD_reseau.setText("L'adresse renseignée est privée.")
+            self.lbl_Adress_SR.hide()
+            self.lbl_Broadcast_SR.hide()
+            self.lbl_Broadcast_IP.hide()
+            return
 
-            if 1 <= premier_octet <= 126:
-                classe = 'A'
-                masque_class = ipaddress.IPv4Network("0.0.0.0/8").netmask
-            elif 128 <= premier_octet <= 191:
-                classe = 'B'
-                masque_class = ipaddress.IPv4Network("0.0.0.0/16").netmask
-            elif 192 <= premier_octet <= 223:
-                classe = 'C'
-                masque_class = ipaddress.IPv4Network("0.0.0.0/24").netmask
-            else:
-                raise ValueError("Adresse IP en dehors des classes A, B ou C.")
+        # Vérification de la classe de l'IP
+        premier_octet = int(ip_text.split('.')[0])
 
-            # Valider si le masque correspond à la classe
-            if masque_sous_reseau > masque_class:
-                # Appel de la fonction qui traite les sous-réseaux
-                adresse_reseau_sr, broadcast_sr = self.Calc_data_sr(ip_text, masque_text)
-                self.lbl_Adress_SR.show()
-                self.lbl_Broadcast_SR.show()
-                self.lbl_Adress_SR.setText(f"Adresse Réseau SR: {adresse_reseau_sr}")
-                self.lbl_Broadcast_SR.setText(f"Adresse Broadcast SR: {broadcast_sr}")
+        if 1 <= premier_octet <= 126:
+            classe = 'A'
+            masque_class = ipaddress.IPv4Network("0.0.0.0/8").netmask
+        elif 128 <= premier_octet <= 191:
+            classe = 'B'
+            masque_class = ipaddress.IPv4Network("0.0.0.0/16").netmask
+        elif 192 <= premier_octet <= 223:
+            classe = 'C'
+            masque_class = ipaddress.IPv4Network("0.0.0.0/24").netmask
+        else:
+            self.lbl_AD_reseau.setText("L'adresse renseignée est en dehors des classes A, B ou C.")
+            self.lbl_Adress_SR.hide()
+            self.lbl_Broadcast_SR.hide()
+            self.lbl_Broadcast_IP.hide()
+            return
 
-                self.Calc_data()
 
-            else:
-                # Calcul des adresses réseau et broadcast en fonction de la classe
-                self.Calc_data()
-                self.lbl_Adress_SR.hide()
-                self.lbl_Broadcast_SR.hide()
+        # Valider si le masque correspond à la classe
+        if masque_sous_reseau > masque_class:
+            # Appel de la fonction qui traite les sous-réseaux
+            adresse_reseau_sr, broadcast_sr = self.Calc_data_sr(ip_text, masque_text)
+            self.lbl_Adress_SR.show()
+            self.lbl_Broadcast_SR.show()
+            self.lbl_Adress_SR.setText(f"Adresse Réseau SR: {adresse_reseau_sr}")
+            self.lbl_Broadcast_SR.setText(f"Adresse Broadcast SR: {broadcast_sr}")
 
-        except ValueError as e:
-            QMessageBox.critical(self, "Erreur", f"Entrée invalide : {e}")
+            self.Calc_data()
+        else:
+            # Calcul des adresses réseau et broadcast en fonction de la classe
+            self.Calc_data()
+            self.lbl_Adress_SR.hide()
+            self.lbl_Broadcast_SR.hide()
 
 
 # coucou

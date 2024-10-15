@@ -307,9 +307,11 @@ class Methode_Three(QWidget):
 
 
             adresse_entier = int(reseau.network_address)
+            masque_adresse = str(ipaddress.IPv4Network(f"0.0.0.0/{nouveau_masque}", strict=False).netmask)
+
 
             self.lbl_decoupeSR.setText(
-                f"Découpe possible. Masque nécessaire : /{nouveau_masque}, Max d\'hôtes : {taille_sous_reseau-2}")
+                f"Découpe possible. Masque nécessaire : {masque_adresse}.")
 
 
             # Réinitialiser et montrer le tableau
@@ -390,9 +392,11 @@ class Methode_Three(QWidget):
                     f"Impossible de réaliser la découpe. Maximum de sous réseaux possible : {max_sous_reseaux_possibles}.\nSous réseaux demandés : {nombre_sr}")
                 return
 
+            masque_adresse = str(ipaddress.IPv4Network(f"0.0.0.0/{masque_nouveau}", strict=False).netmask)
+
             # Afficher les résultats
             self.lbl_decoupeIP.setText(
-                f"Découpe Possible. Masque nécessaire : /{masque_nouveau}, Max sous-réseaux possibles : {max_sous_reseaux_possibles}")
+                f"Découpe Possible. Masque nécessaire : {masque_adresse}, Max sous-réseaux possibles : {max_sous_reseaux_possibles}")
 
             if max_sous_reseaux_possibles <= 0:
                 self.lbl_decoupeIP.setText("Impossible de réaliser la découpe avec le nombre d'IP demandé.")
@@ -445,12 +449,15 @@ class Methode_Three(QWidget):
 
     def open_page_pop_up(self):
 
+        self.lbl_nbTotHotes.show()
+
         if self.radio_SR.isChecked():
             # Récupérer le texte du champ nbSR et supprimer les espaces
             nb_sr_text = self.nbSR.text().strip()
 
             if not nb_sr_text:  # Si le champ est vide
-                QMessageBox.warning(self, "Erreur", "Veuillez entrer un nombre de sous-réseaux.")
+                self.lbl_decoupeSR.setText("Entrez un nombre de sous réseaux.")
+                self.lbl_nbTotHotes.hide()
                 return
 
             try:
@@ -458,7 +465,21 @@ class Methode_Three(QWidget):
                 nb_sr = int(nb_sr_text)
 
                 if nb_sr <= 0:  # Vérifier si le nombre est valide (positif)
-                    QMessageBox.warning(self, "Erreur", "Le nombre de sous-réseaux doit être supérieur à 0.")
+                    self.lbl_decoupeSR.setText("Le nombre de sous réseaux doit être supérieur à 0.")
+                    self.lbl_nbTotHotes.hide()
+                    return
+
+                reseau = self.AD_RS.text()
+                if not reseau.strip():
+                    self.lbl_decoupeSR.setText("Aucune adresse réseau.")
+                    self.lbl_nbTotHotes.hide()
+                    return
+
+                try:
+                    ip = ipaddress.IPv4Address(reseau)
+                except ValueError:
+                    self.lbl_decoupeSR.setText("Adresse réseau non valide.")
+                    self.lbl_nbTotHotes.hide()
                     return
 
                 # Ouvrir la deuxième fenêtre avec le nombre de sous-réseaux validé

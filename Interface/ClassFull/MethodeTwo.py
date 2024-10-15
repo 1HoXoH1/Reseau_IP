@@ -87,15 +87,50 @@ class Methode_Two(QWidget):
         masque_str = self.masque_2.text()
         reseau_str = self.AD_RESEAU.text()
 
+
         # Vérifier que les champs ne sont pas vides
+        if not ip_str.strip() and not masque_str.strip() and not reseau_str.strip():
+            self.lbl_rep.setText("Aucun champs rempli.")
+            return
+        if not ip_str.strip() and not masque_str.strip():
+            self.lbl_rep.setText("Aucune adresse IP et aucun masque.")
+            return
+        if not ip_str.strip() and not reseau_str.strip():
+            self.lbl_rep.setText("Aucune adresse IP et aucune adresse réseau.")
+            return
+        if not masque_str.strip() and not reseau_str.strip():
+            self.lbl_rep.setText("Aucun masque et aucune adresse réseau.")
+            return
         if not ip_str.strip():
-            self.lbl_rep.setText("Aucune adresse IP fournie.")
+            self.lbl_rep.setText("Aucune adresse IP.")
             return
         if not masque_str.strip():
-            self.lbl_rep.setText("Aucun masque fourni.")
+            self.lbl_rep.setText("Aucun masque.")
             return
         if not reseau_str.strip():
-            self.lbl_rep.setText("Aucune adresse réseau fournie.")
+            self.lbl_rep.setText("Aucune adresse réseau.")
+            return
+
+        # Vérification de la classe de l'IP
+        premier_octet = int(ip_str.split('.')[0])
+
+        if 1 <= premier_octet <= 126:
+            classe = 'A'
+            masque_class = ipaddress.IPv4Network("0.0.0.0/8").netmask
+        elif 128 <= premier_octet <= 191:
+            classe = 'B'
+            masque_class = ipaddress.IPv4Network("0.0.0.0/16").netmask
+        elif 192 <= premier_octet <= 223:
+            classe = 'C'
+            masque_class = ipaddress.IPv4Network("0.0.0.0/24").netmask
+        else:
+            self.lbl_rep.setText("L'adresse renseignée est en dehors des classes A, B ou C.")
+            return
+
+        try:
+            masque_sous_reseau = ipaddress.IPv4Network(f"0.0.0.0/{masque_str}", strict=False).netmask
+        except ValueError:
+            self.lbl_rep.setText("Le masque renseigné n'est pas valide.")
             return
 
         try:
@@ -119,9 +154,9 @@ class Methode_Two(QWidget):
 
             # Vérifier si l'adresse IP est dans le réseau
             if ip in reseau:
-                self.lbl_rep.setText(f"L'adresse IP {ip} est dans le réseau {reseau}.")
+                self.lbl_rep.setText(f"L'adresse IP {ip} est dans le réseau {reseau_str} .")
             else:
-                self.lbl_rep.setText(f"L'adresse IP {ip} n'est pas dans le réseau {reseau}.")
+                self.lbl_rep.setText(f"L'adresse IP {ip} n'est pas dans le réseau {reseau_str} .")
         except ValueError:
             # Gestion des erreurs de format incorrect
             self.lbl_rep.setText("Erreur dans l'IP, le masque ou l'adresse réseau.")
