@@ -86,8 +86,9 @@ class Database():
 
     def change_password(self, email, new_password) -> bool:
         query = QSqlQuery()
+        pwd = self.hash_password(new_password)
         query.prepare("UPDATE user SET password = ? WHERE email = ?")
-        query.addBindValue(new_password)
+        query.addBindValue(pwd)
         query.addBindValue(email)
         if not query.exec_():
             print("Failed to update record: " + query.lastError().text())
