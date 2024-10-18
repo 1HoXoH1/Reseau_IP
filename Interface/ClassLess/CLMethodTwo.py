@@ -144,9 +144,9 @@ class CLMethod_Two(QWidget):
 
             # Vérifier si l'adresse IP appartient au réseau
             if ip in reseau:
-                self.lbl_dansSR.setText(f"Appartient au réseau : Oui ({reseau})")
+                self.lbl_dansSR.setText(f"Appartient au réseau : Oui, l'adresse renseignée appartient bien au réseau ({reseau})")
             else:
-                self.lbl_dansSR.setText(f"Appartient au réseau : Non ({reseau})")
+                self.lbl_dansSR.setText(f"Appartient au réseau : Non, l'adresse renseignée n'appartient pas au réseau ({reseau})")
 
         except ValueError as e:
             # Gestion des erreurs de format ou autres erreurs

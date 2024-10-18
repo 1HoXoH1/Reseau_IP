@@ -90,13 +90,13 @@ class CLMethod_One(QWidget):
     def generator_Ip_ClassFull(self):
         # Vérification de l'adresse IP
         if not self.AD_IP.text().strip():
-            self.lbl_SR_Reseau_IP.setText("Aucune adresse IP")
+            self.lbl_SR_Reseau_IP.setText("Aucune adresse IP.")
             self.lbl_SR_Broadcast_IP.hide()
             return
 
         # Vérification du masque
         if not self.masque.text().strip():
-            self.lbl_SR_Reseau_IP.setText("Aucun masque")
+            self.lbl_SR_Reseau_IP.setText("Aucun masque.")
             self.lbl_SR_Broadcast_IP.hide()
             return
 
@@ -113,7 +113,7 @@ class CLMethod_One(QWidget):
 
             # Vérification du masque
             if network.prefixlen > 30:
-                self.lbl_SR_Reseau_IP.setText("Le masque doit être inférieur ou égal à /30")
+                self.lbl_SR_Reseau_IP.setText("Le masque doit être inférieur ou égal à /30.")
                 self.lbl_SR_Broadcast_IP.hide()
                 return
 
@@ -133,8 +133,8 @@ class CLMethod_One(QWidget):
             broadcast = network.broadcast_address
 
             # Mettre à jour les labels avec les valeurs calculées
-            self.lbl_SR_Reseau_IP.setText(f"Adresse Sous-Réseau: {adresse_reseau}")
-            self.lbl_SR_Broadcast_IP.setText(f"Adresse Broadcast (SR): {broadcast}")
+            self.lbl_SR_Reseau_IP.setText(f"Adresse Sous-Réseau: {adresse_reseau} .")
+            self.lbl_SR_Broadcast_IP.setText(f"Adresse Broadcast (SR): {broadcast} .")
 
         except ValueError as e:
             # Gérer les erreurs de format incorrect

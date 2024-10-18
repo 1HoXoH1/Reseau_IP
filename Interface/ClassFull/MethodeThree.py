@@ -374,6 +374,7 @@ class Methode_Three(QWidget):
 
             # Vérifier si le nombre d'IP par sous-réseau est valide
             if nombre_ip_par_sr <= 0 or nombre_ip_par_sr >= total_hotes:
+                self.tableauIP.hide()
                 raise ValueError("Le nombre d'IP par sous-réseau doit être compris entre 1 et {}".format(total_hotes))
 
             # Calculer le masque nécessaire pour le nombre d'IP par sous-réseau
@@ -381,6 +382,7 @@ class Methode_Three(QWidget):
 
             # Vérifier que le masque n'est pas inférieur au masque initial
             if masque_nouveau < masque_initial:
+                self.tableauIP.hide()
                 raise ValueError("Le masque nécessaire ne peut pas être inférieur au masque initial.")
 
             # Calculer le nombre de sous-réseaux possibles
