@@ -3,6 +3,9 @@ from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import *
 import ipaddress
 
+from Projet_1.ReservedAdress.ReservedAdress import is_reserved
+
+
 class CLMethod_One(QWidget):
     def __init__(self):
         super().__init__()
@@ -102,8 +105,8 @@ class CLMethod_One(QWidget):
 
         self.lbl_SR_Broadcast_IP.show()
 
-        ip_str = self.AD_IP.text().strip()  # Récupération de l'adresse IP et suppression des espaces
-        masque_str = self.masque.text().strip()  # Récupération du masque au format /XX
+        ip_str = self.AD_IP.text().strip()
+        masque_str = self.masque.text().strip()
 
         try:
             # Convertir l'adresse IP en objet IPv4
@@ -118,13 +121,8 @@ class CLMethod_One(QWidget):
                 return
 
             # Vérification si l'adresse est réservée ou privée
-            if ip.is_reserved:
-                self.lbl_SR_Reseau_IP.setText("L'adresse renseignée est réservée.")
-                self.lbl_SR_Broadcast_IP.hide()
-                return
-
-            if ip.is_private:
-                self.lbl_SR_Reseau_IP.setText("L'adresse renseignée est privée.")
+            if is_reserved(ip):
+                self.lbl_SR_Reseau_IP.setText("L'adresse IP est réservée.")
                 self.lbl_SR_Broadcast_IP.hide()
                 return
 
@@ -138,4 +136,6 @@ class CLMethod_One(QWidget):
 
         except ValueError as e:
             # Gérer les erreurs de format incorrect
-            QMessageBox.critical(self, "Erreur", f"Entrée invalide : {e}")
+            self.lbl_SR_Reseau_IP.setText("L'adresse IP n'est pas valide.")
+            self.lbl_SR_Broadcast_IP.hide()
+            return

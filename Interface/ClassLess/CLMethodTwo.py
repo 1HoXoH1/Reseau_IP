@@ -3,6 +3,9 @@ from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import *
 import ipaddress
 
+from Projet_1.ReservedAdress.ReservedAdress import is_reserved
+
+
 class CLMethod_Two(QWidget):
     def __init__(self):
         super().__init__()
@@ -116,17 +119,18 @@ class CLMethod_Two(QWidget):
             return
 
         try:
-            # Combiner l'adresse de réseau et le masque pour créer un objet réseau
-            reseau = ipaddress.ip_network(f'{reseau_text}/{masque_text}', strict=False)
+            try:
+                # Combiner l'adresse de réseau et le masque pour créer un objet réseau
+                reseau = ipaddress.ip_network(f'{reseau_text}/{masque_text}', strict=False)
+            except ValueError:
+                self.lbl_dansSR.setText("L'adresse réseau n'est pas valide.")
+                return
+
             # Créer un objet adresse IP
             ip = ipaddress.ip_address(ip_text)
 
-            if ip.is_reserved:
-                self.lbl_dansSR.setText("L'adresse renseignée est réservée.")
-                return
-
-            if ip.is_private:
-                self.lbl_dansSR.setText("L'adresse renseignée est privée.")
+            if is_reserved(ip):
+                self.lbl_dansSR.setText("L'adresse IP est réservée.")
                 return
 
             masque_int = int(masque_text)
@@ -150,5 +154,5 @@ class CLMethod_Two(QWidget):
 
         except ValueError as e:
             # Gestion des erreurs de format ou autres erreurs
-            self.lbl_dansSR.setText(f"Erreur : {str(e)}")
-
+            self.lbl_dansSR.setText("L'adresse IP n'est pas valide.")
+            return

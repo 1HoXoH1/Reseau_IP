@@ -16,7 +16,7 @@ class Login(QWidget):
 
         self.main_page = None
         self.db = Database()
-        self.db.get_data()
+        #self.db.get_data()
         self.inscription_page = None
         self.change_pswd = None
 

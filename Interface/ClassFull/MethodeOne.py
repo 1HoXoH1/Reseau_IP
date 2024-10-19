@@ -2,6 +2,7 @@ import ipaddress
 from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import *
+from ...ReservedAdress.ReservedAdress import is_reserved
 
 
 class Methode_One(QWidget):
@@ -151,8 +152,15 @@ class Methode_One(QWidget):
             self.lbl_Broadcast_IP.hide()
             return
 
-        # Convertir l'adresse IP et le masque en objets ip_address et ip_network
-        adresse_ip = ipaddress.ip_address(ip_text)
+        try:
+            # Convertir l'adresse IP et le masque en objets ip_address et ip_network
+            adresse_ip = ipaddress.ip_address(ip_text)
+        except ValueError:
+            self.lbl_AD_reseau.setText("Adresse IP invalide.")
+            self.lbl_Adress_SR.hide()
+            self.lbl_Broadcast_SR.hide()
+            self.lbl_Broadcast_IP.hide()
+            return
 
         try:
             masque_sous_reseau = ipaddress.IPv4Network(f"0.0.0.0/{masque_text}", strict=False).netmask
@@ -163,16 +171,9 @@ class Methode_One(QWidget):
             self.lbl_Broadcast_IP.hide()
             return
 
-        # Vérifier si l'adresse IP est réservée ou privée
-        if adresse_ip.is_reserved:
-            self.lbl_AD_reseau.setText("L'adresse renseignée est réservée.")
-            self.lbl_Adress_SR.hide()
-            self.lbl_Broadcast_SR.hide()
-            self.lbl_Broadcast_IP.hide()
-            return
-
-        if adresse_ip.is_private:
-            self.lbl_AD_reseau.setText("L'adresse renseignée est privée.")
+        # Vérifier si l'adresse IP est réservée
+        if is_reserved(adresse_ip):
+            self.lbl_AD_reseau.setText("L'adresse est réservée.")
             self.lbl_Adress_SR.hide()
             self.lbl_Broadcast_SR.hide()
             self.lbl_Broadcast_IP.hide()
@@ -213,6 +214,3 @@ class Methode_One(QWidget):
             self.Calc_data()
             self.lbl_Adress_SR.hide()
             self.lbl_Broadcast_SR.hide()
-
-
-# coucou
