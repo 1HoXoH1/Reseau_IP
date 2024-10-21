@@ -12,7 +12,7 @@ class PageInscription(QWidget):
 
         #appel db
         self.db = Database()
-        self.db.get_data()
+        #self.db.get_data()
 
         #appel login
         self.log = None

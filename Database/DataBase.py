@@ -84,16 +84,34 @@ class Database():
         return hashed.decode("utf-8")
 
 
+
+
     def change_password(self, email, new_password) -> bool:
+        # Vérifie si l'utilisateur existe dans la base de données avant de changer le mot de passe
         query = QSqlQuery()
-        pwd = self.hash_password(new_password)
-        query.prepare("UPDATE user SET password = ? WHERE email = ?")
-        query.addBindValue(pwd)
+        query.prepare("SELECT email FROM user WHERE email = ?")
         query.addBindValue(email)
+
         if not query.exec_():
-            print("Failed to update record: " + query.lastError().text())
-            raise Exception("Failed to update record: " + query.lastError().text())
+            QMessageBox.warning(None, "Database Error", "Erreur lors de la vérification de l'utilisateur: "+ query.lastError().text())
             return False
+
+        if not query.next():
+            QMessageBox.warning(None, "Database Error", "Email non trouvé dans la base de données.")
+            return False
+
+        # Si l'email existe, on continue à changer le mot de passe
+        query = QSqlQuery()
+        hashed_password = self.hash_password(new_password)
+        query.prepare("UPDATE user SET password = ? WHERE email = ?")
+        query.addBindValue(hashed_password)
+        query.addBindValue(email)
+
+        if not query.exec_():
+            QMessageBox.warning(None, "Database error", "Échec de la mise à jour du mot de passe:" +query.lastError().text())
+            return False
+
         return True
+
 
 

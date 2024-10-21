@@ -74,7 +74,6 @@ class forgive_mdp(QWidget):
 
     def IsSame(self):
         password = self.Ln_new_password.text()
-        print(password)
         if len(password) < 9:
             QMessageBox.warning(None, "Inscription Invalide", "Veuillez noter que votre mot de passe doit contenir au "
                                                              "minimum 9 caractères.")
